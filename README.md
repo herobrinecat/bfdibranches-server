@@ -63,5 +63,5 @@ You can save the project and compile it for Windows and other platforms too.
 
 (If the decompiler complains about encryption key, then you're most likely trying to decompile for version below 0.1.4, the solution is to update or use the hex editor method)
 
-**The url text you see after you changed the server to the custom server on the top-right is normal and is expected**
+**(The URL text you see after you changed the server to the custom server on the top-right is normal and is expected)**
 
