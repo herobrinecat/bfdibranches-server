@@ -12,7 +12,8 @@ This is what we have implemented so far:
 * Leaderboard (User ranks doesn't automatically sort)
 * Levels (partially)
 * version.php (needed to let the game check for updates)
- (Moderation part has not been implemented, as only the moderator check part has been implemented)
+
+(Moderation part has not been implemented, as only the moderator check part has been implemented)
 
 ## Setting up
 
