@@ -16,7 +16,7 @@ var port = 3000
 app.use(express.json())
 
 const connection = await mysql.createConnection({
-    // PUT YOUR OWN DATABASE IN AND ALWAYS PUT THE PASSWORD IN IT!!!
+    // PUT YOUR OWN DATABASE IN AND I WOULD RECOMMEND PUTTING THE PASSWORD IN IT!!!
     host: 'localhost',
     user: 'root',
     database: 'bfdibranches',
@@ -1787,6 +1787,40 @@ app.post("/delete.php", async (req, res) => {
                 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET deleted = 1 WHERE id = ?", [req.body["levelid"]])
                 if (results2["affectedRows"] > 0) {
                     res.status(200).send("Level deleted")
+                }
+                else {
+                    res.status(500).send("Something went wrong")
+                }
+            }
+            else {
+                res.status(400).end()
+            }
+        }
+    }
+    else {
+     res.status(401).send("Invalid Info")
+    }
+    }
+     catch (err) {
+     console.log(err)
+     res.status(400).end()
+    }
+})
+
+app.post("/changelevelinfo.php", async (req, res) => {
+      try {
+        var password = parseJwt(req.body["password"])["password"]
+        const [results, fields] =  await connection.query(
+        'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
+    );
+
+    if (results.length > 0) {
+        const [results1, fields1] = await connection.query("SELECT username FROM bfdibrancheslevel WHERE id = ?", [req.body["levelid"]])
+        if (results1.length > 0) {
+            if (results1[0]["username"] == req.body["username"]) {
+                const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET description = ?, icon = ?, title = ? WHERE id = ?", [req.body["newdescription"],req.body["newicon"],req.body["newtitle"],req.body["levelid"]])
+                if (results2["affectedRows"] > 0) {
+                    res.status(200).send("Level info changed")
                 }
                 else {
                     res.status(500).send("Something went wrong")
