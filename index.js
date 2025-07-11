@@ -55,20 +55,20 @@ app.post("/editpfp.php", async (req,res) => {
         if (results.length > 0) {
             var foregroundowned = false
             var backgroundowned = false
-            for (var i = 0; i < results[0]["foregroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',').length; i++) {
-                var splitted = results[0]["foregroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',')
+            for (var i = 0; i < results[0]["foregroundsowned"].toString().slice(0,1).slice(0,-1).split(',').length; i++) {
+                var splitted = results[0]["foregroundsowned"].toString().slice(0,1).slice(0,-1).split(',')
                 if (splitted[i] == req.body["foreground"]) {
                     foregroundowned = true
                     break
                 }
             }
-            for (var i = 0; i < results[0]["backgroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',').length; i++) {
-                var splitted = results[0]["backgroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',')
+            for (var i = 0; i < results[0]["backgroundsowned"].toString().slice(0,1).slice(0,-1).split(',').length; i++) {
+                var splitted = results[0]["backgroundsowned"].toString().slice(0,1).slice(0,-1).split(',')
                 if (splitted[i] == req.body["background"]) {
                     backgroundowned = true
                     break
                 }
-            }
+            }   
             if (foregroundowned && backgroundowned) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET foreground = ?,background = ? WHERE username = ? AND password = ?',[req.body["foreground"],req.body["background"],req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
@@ -238,11 +238,11 @@ app.post("/pfpshop.php", async (req, res) => {
             res.status(206)
             var result = ""
             for (var i = 0; i < results[0]["foregroundsowned"].split(',').length; i++) {
-                var foregrounds = results[0]["foregroundsowned"].replaceAll("[","").replaceAll("]","").split(',')
+                var foregrounds = results[0]["foregroundsowned"].slice(0,1).slice(0,-1).split(',')
                     result = result + '{"type":0,"pfpid":' + foregrounds[i] + "},"         
             }
             for (var i = 0; i < results[0]["backgroundsowned"].split(',').length; i++) {
-                var backgrounds = results[0]["backgroundsowned"].replaceAll("[","").replaceAll("]","").split(',')
+                var backgrounds = results[0]["backgroundsowned"].slice(0,1).slice(0,-1).split(',')
                     if (i == backgrounds.length - 1) {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" 
                     }   
@@ -1141,15 +1141,18 @@ app.post("/moderation/getreports.php",async (req,res) => {
             if (results[0]["moderator"] >= 1) {
                 var [results1, fields1] = []
                 if (req.body["resolved"] == 1) {
-                    [results1, fields1] =  await connection.query('SELECT reportid,leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,resolved,description FROM bfdibranchesreport WHERE resolved = 0 ORDER BY reportid DESC LIMIT ?,10',[req.body["page"]]);
+                    [results1, fields1] =  await connection.query('SELECT reportid,leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,resolved,description FROM bfdibranchesreport WHERE resolved = 0 ORDER BY reportid DESC LIMIT ?,10',[req.body["page"] * 10]);
                 }
                 else {
-                     [results1, fields1] =  await connection.query('SELECT reportid,leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,resolved,description FROM bfdibranchesreport ORDER BY reportid DESC LIMIT ?,10',[req.body["page"]]);
+                     [results1, fields1] =  await connection.query('SELECT reportid,leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,resolved,description FROM bfdibranchesreport ORDER BY reportid DESC LIMIT ?,10',[req.body["page"] * 10]);
                 }
                 if (results1.length > 0) {
                     for (var i = 0; i < results1.length; i++) {
                     results1[i]["reporter"] = results1[i]["reportername"]
-                    results1[i]["totalreports"] = results1.length
+                    const [results2, fields2] = await connection.query('SELECT reportid FROM bfdibranchesreport WHERE levelid = ?', [results1[i]["levelid"]])
+                    if (results2.length > 0) {
+                        results1[i]["totalreports"] = results2.length
+                    }
                 }
                 res.send(results1)
                 }
