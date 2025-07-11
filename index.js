@@ -72,9 +72,15 @@ app.post("/editpfp.php", async (req,res) => {
             if (foregroundowned && backgroundowned) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET foreground = ?,background = ? WHERE username = ? AND password = ?',[req.body["foreground"],req.body["background"],req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
+                     const [results2, fields2] = await connection.query('UPDATE bfdibrancheslevel SET foreground = ?,background = ? WHERE username = ?',[req.body["foreground"],req.body["background"],req.body["username"]])
+                if (results2["affectedRows"] > 0) {
                      res.status(200)
                      res.end()
 
+                }
+                else {
+                    res.status(500).end()
+                }
                 }
                
             }
