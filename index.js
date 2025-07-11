@@ -891,6 +891,516 @@ app.post("/getlist.php", async (req, res) => {
             }
         }  
     }
+    else if (req.body["searchtype"] == "user") {
+                if (req.body["searchtitle"] != "") {
+             if (req.body["type"] == "spotlight") {
+                if (req.body["order"] == "newest") {
+                    var [results1, fields1] = [];
+                    if (req.body["difficulty"] == -1) {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND username LIKE ? AND spotlight = 1 OR spotlight = 2 ORDER BY id DESC LIMIT ?,10',["%" + req.body["searchtitle"] + "%",parseInt(req.body["page"] * 10)])
+                    }
+                    else {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? AND username LIKE ? AND spotlight = 1 OR spotlight = 2 ORDER BY id DESC LIMIT ?,10',[req.body["difficulty"],"%" + req.body["searchtitle"] + "%",parseInt(req.body["page"] * 10)])
+                    }
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                            var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                             res.status(400)
+                            res.end()
+                    }
+                }
+                else if (req.body["order"] == "oldest") {
+                    var [results1, fields1] = [];
+                    if (req.body["difficulty"] == -1) {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND username LIKE ? AND spotlight = 1 OR spotlight = 2 ORDER BY id LIMIT ?,10',["%" + req.body["searchtitle"] + "%", parseInt(req.body["page"] * 10)])
+                    }
+                    else {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND username LIKE ? AND difficulty = ? AND spotlight = 1 OR spotlight = 2 ORDER BY id LIMIT ?,10',["%" + req.body["searchtitle"] + "%",req.body["difficulty"],(parseInt(req.body["page"] * 10))])
+                    }
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                            var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                             res.status(400)
+                            res.end()
+                    }
+                }
+            }
+            else if (req.body["type"] == "recent") {
+                if (req.body["order"] == "newest") {
+                    var [results1, fields1] = []
+                     if (req.body["difficulty"] == -1) {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND username LIKE ? ORDER BY id DESC LIMIT ?,10',["%" + req.body["searchtitle"] + "%",parseInt(req.body["page"] * 10)])
+                    }
+                    else {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? AND username LIKE ? ORDER BY id DESC LIMIT ?,10',[req.body["difficulty"],"%" + req.body["searchtitle"] + "%",(parseInt(req.body["page"] * 10))])
+                    }
+
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                             var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                        res.status(400).end()
+                    }
+                }
+                else if (req.body["order"] == "oldest") {
+                    var [results1, fields1] = []
+                     if (req.body["difficulty"] == -1) {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND username LIKE ? ORDER BY id LIMIT ?,10',["%" + req.body["searchtitle"] + "%",parseInt(req.body["page"] * 10)])
+                    }
+                    else {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? AND username LIKE ? ORDER BY id LIMIT ?,10',[req.body["difficulty"],"%" + req.body["searchtitle"] + "%",parseInt(req.body["page"] * 10)])
+                    }
+
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                             var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                        res.status(400).end()
+                    }
+                }
+            }
+        }
+        else {
+            if (req.body["type"] == "spotlight") {
+                if (req.body["order"] == "newest") {
+                    var [results1, fields1] = [];
+                    if (req.body["difficulty"] == -1) {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND spotlight = 1 OR spotlight = 2 ORDER BY id DESC LIMIT ?,10',[(parseInt(req.body["page"] * 10))])
+                    }
+                    else {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? AND spotlight = 1 OR spotlight = 2 ORDER BY id DESC LIMIT ?,10',[req.body["difficulty"],(parseInt(req.body["page"] * 10))])
+                    }
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                            var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                             res.status(400)
+                            res.end()
+                    }
+                }
+                else if (req.body["order"] == "oldest") {
+                    var [results1, fields1] = [];
+                    if (req.body["difficulty"] == -1) {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND spotlight = 1 OR spotlight = 2 ORDER BY id LIMIT ?,10',[(parseInt(req.body["page"] * 10))])
+                    }
+                    else {
+                     [results1, fields1] = await connection.query('SELECT id,username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,version,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? AND spotlight = 1 OR spotlight = 2 ORDER BY id LIMIT ?,10',[req.body["difficulty"],(parseInt(req.body["page"] * 10))])
+                    }
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                            var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                             res.status(400)
+                            res.end()
+                    }
+                }
+            }
+            else if (req.body["type"] == "recent") {
+                if (req.body["order"] == "newest") {
+                    var [results1, fields1] = []
+                     if (req.body["difficulty"] == -1) {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 ORDER BY id DESC LIMIT ?,10',[(parseInt(req.body["page"] * 10))])
+                    }
+                    else {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? ORDER BY id DESC LIMIT ?,10',[req.body["difficulty"],(parseInt(req.body["page"] * 10))])
+                    }
+
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                             var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                        res.status(400).end()
+                    }
+                }
+                else if (req.body["order"] == "oldest") {
+                    var [results1, fields1] = []
+                     if (req.body["difficulty"] == -1) {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 ORDER BY id LIMIT ?,10',[(parseInt(req.body["page"] * 10))])
+                    }
+                    else {
+                    [results1, fields1] = await connection.query('SELECT id, username,creatortime,title,description,difficulty,date,username,spotlight,completed,completedtime,icon,peoplebeaten,background,foreground,worldrecordtime,worldrecordholder,firstcompleter,lastcompleter,characterOnly FROM bfdibrancheslevel WHERE deleted = 0 AND difficulty = ? ORDER BY id LIMIT ?,10',[req.body["difficulty"],(parseInt(req.body["page"] * 10))])
+                    }
+
+
+                    if (results1.length > 0) {
+                        for (var i = 0; i < results1.length; i++) {
+                             var peoplebeatenarray = []
+                            peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
+                            if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
+
+                            if (peoplebeatenarray.length > 1) {
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            else {
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                            }
+                            results1[i]["icon"] =  results1[i]["icon"].toString()
+                            results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
+                            results1[i]["difficulty"] =  results1[i]["difficulty"].toString()
+                            results1[i]["foreground"] = results1[i]["foreground"].toString()
+                            
+                            results1[i]["background"]= results1[i]["background"].toString()
+                                                        if (results.length > 0) {
+                                  if (results1[i]["peoplebeaten"].toString().includes(",")) {
+                                if (results1[i]["peoplebeaten"].toString().includes("," + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().endsWith("," + results[0]["id"] + "]")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else if (results1[i]["peoplebeaten"].toString().startsWith("[" + results[0]["id"] + ",")) {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            else {
+                                if (results1[i]["peoplebeaten"] == "[" + results[0]["id"] + "]") {
+                                    results1[i]["completed"]  = "true"
+                                }
+                                else {
+                                    results1[i]["completed"]  = "false"
+                                }
+                            }
+                            }
+                        }
+                        
+                        var jsonstring = JSON.stringify(results1)
+                        jsonstring = jsonstring.replaceAll("\"username\":","\"user\":")
+                        res.send(jsonstring)
+                    }
+                    else {
+                        res.status(400).end()
+                    }
+                }
+            }
+        }  
+    }
 
 }
 catch (err) {
@@ -1283,7 +1793,7 @@ app.post("/delete.php", async (req, res) => {
                 }
             }
             else {
-                res.status(403).send("You don't own this level")
+                res.status(400).end()
             }
         }
     }
