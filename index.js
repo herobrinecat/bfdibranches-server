@@ -52,7 +52,7 @@ app.post("/editpfp.php", async (req,res) => {
         if (results.length > 0) {
             var foregroundowned = false
             var backgroundowned = false
-            var splitted = results[0]["foregroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',')
+            var splitted = results[0]["foregroundsowned"].toString().slice(0,-1).slice(1).split(',')
             for (var i = 0; i < splitted.length; i++) {
                 
                 if (splitted[i] == req.body["foreground"]) {
@@ -60,7 +60,7 @@ app.post("/editpfp.php", async (req,res) => {
                     break
                 }
             }
-            splitted = results[0]["backgroundsowned"].toString().replaceAll("[","").replaceAll("]","").split(',')
+            splitted = results[0]["backgroundsowned"].toString().slice(0,-1).slice(1).split(',')
             for (var i = 0; i < splitted.length; i++) {
                 
                 if (splitted[i] == req.body["background"]) {
@@ -104,12 +104,10 @@ app.post('/editprofile.php', async (req, res) => {
         'UPDATE bfdibranchesaccount SET bio = ? WHERE username = ? AND password = ?',[req.body["bio"],req.body["username"], password]
     );
         if (results["affectedRows"] > 0) {
-            res.status(200)
-            res.send("Changed bio")
+            res.status(200).send("Changed bio")
         }
         else {
-            res.status(401)
-            res.send("Invalid Info")
+            res.status(401).send("Invalid Info")
         }
     } catch (err) {
         console.log(err)
@@ -226,11 +224,11 @@ app.post("/pfpshop.php", async (req, res) => {
             res.status(206)
             var result = ""
             for (var i = 0; i < results[0]["foregroundsowned"].split(',').length; i++) {
-                var foregrounds = results[0]["foregroundsowned"].replaceAll("[","").replaceAll("]","").split(',')
+                var foregrounds = results[0]["foregroundsowned"].slice(0,-1).slice(1).split(',')
                     result = result + '{"type":0,"pfpid":' + foregrounds[i] + "},"         
             }
             for (var i = 0; i < results[0]["backgroundsowned"].split(',').length; i++) {
-                var backgrounds = results[0]["backgroundsowned"].replaceAll("[","").replaceAll("]","").split(',')
+                var backgrounds = results[0]["backgroundsowned"].slice(0,-1).slice(1).split(',')
                     if (i == backgrounds.length - 1) {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" 
                     }   
