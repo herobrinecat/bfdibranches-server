@@ -84,7 +84,7 @@ app.post("/editpfp.php", async (req,res) => {
                 if (results2["affectedRows"] > 0) {
                      res.status(200).end()
                      if (verbose) {
-                        console.log("<INFO> " + req.body["username"] + " changed their profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] + "!")
+                        console.log("\x1b[34m", "<INFO> " + req.body["username"] + " changed their profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] + "!")
                      }
 
                 }
@@ -97,19 +97,19 @@ app.post("/editpfp.php", async (req,res) => {
             else {
                 res.status(400).send("You don't own this pfp")
                 if (verbose) {
-                    console.log("<INFO> " + req.body["username"] +  "(" + req.ip + "*) attempted to change the profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] +", but doesn't own it!")
+                    console.log("\x1b[34m", "<INFO> " + req.body["username"] +  "(" + req.ip + "*) attempted to change the profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] +", but doesn't own it!")
                 }
             }
         }
         else {
             res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
             
         }
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -123,17 +123,17 @@ app.post('/editprofile.php', async (req, res) => {
         if (results["affectedRows"] > 0) {
             res.status(200).send("Changed bio")
             if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " edited their bio.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " edited their bio.")
             }
         }
         else {
             res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
         }
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -161,7 +161,7 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
     }
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -190,7 +190,7 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
     }
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -215,12 +215,12 @@ app.post("/getpfpinventory.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -245,12 +245,12 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
 }
 catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -290,7 +290,7 @@ app.post("/pfpshop.php", async (req, res) => {
                 if (results1["affectedRows"] > 0) {
             res.status(200).send("1234567890")
             if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (FG).")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (FG).")
             }
         }
         else {
@@ -304,7 +304,7 @@ app.post("/pfpshop.php", async (req, res) => {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, backgroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["bg"][req.body["pfpid"]]), backgrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])   
                 if (results1["affectedRows"] > 0) {
             res.status(200).send("1234567890")
-            console.log("<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
+            console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
         }
         else {
             res.status(401).send("um")
@@ -316,12 +316,12 @@ app.post("/pfpshop.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -346,12 +346,12 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -365,7 +365,7 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     if (results.length > 0) {
         res.send(results)
         if (verbose) {
-            console.log("<INFO> " + req.ip + " requested level " + req.params.id + ". (GET)")
+            console.log("\x1b[34m", "<INFO> " + req.ip + " requested level " + req.params.id + ". (GET)")
         }
     }
     else {
@@ -405,7 +405,7 @@ let isnum = /^\d+$/.test(req.params.id)
     if (results.length > 0) {
         res.send(results)
                 if (verbose) {
-            console.log("<INFO> " + req.ip + " requested level " + req.params.id + ". (POST)")
+            console.log("\x1b[34m", "<INFO> " + req.ip + " requested level " + req.params.id + ". (POST)")
         }
     }
     else {
@@ -429,7 +429,7 @@ app.post("/getlist.php", async (req, res) => {
         if (results.length == 0) {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
      return
     }
@@ -1461,7 +1461,7 @@ app.post("/getlist.php", async (req, res) => {
      }
 }
 catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })  
@@ -1486,7 +1486,8 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         if (results2["affectedRows"] > 0) {
             res.status(200).send("Published!")
             if (verbose) {
-                console.log("<INFO> " + req.body['username'] + " published the level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body['username'] + " replaced level id of " + req.body["replaceid"] + " with level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
+               
             }
         }
         else {
@@ -1504,7 +1505,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         if (results1["affectedRows"] > 0) {
             res.status(200).send("Published!")
              if (verbose) {
-                console.log("<INFO> " + req.body['username'] + " replaced level id of " + req.body["replaceid"] + " with level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
+                 console.log("\x1b[34m", "<INFO> " + req.body['username'] + " published the level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
             }
         }
         else {
@@ -1515,12 +1516,12 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
 }
 catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1552,7 +1553,7 @@ app.post("/signup.php", async (req, res) => {
         })
         res.send("Account Created!\nYour ID is " + (parseInt(results.length) + 1).toString())
         if (verbose) {
-            console.log("<INFO> " + req.body["username"] + "is created by " + req.ip + ".")
+            console.log("\x1b[34m", "<INFO> " + req.body["username"] + "is created by " + req.ip + ".")
         }
         }
     }
@@ -1582,7 +1583,7 @@ app.post("/login.php", async (req, res) => {
         })
         res.send("Your User ID: " + results[0]["id"])
         if (verbose) {
-            console.log("<INFO> " + req.ip + " logged in to the account \"" + req.body["username"] + "\"")
+            console.log("\x1b[34m", "<INFO> " + req.ip + " logged in to the account \"" + req.body["username"] + "\"")
         }
         
         
@@ -1590,7 +1591,7 @@ app.post("/login.php", async (req, res) => {
     else {
         res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
             }
@@ -1604,7 +1605,7 @@ app.post("/login.php", async (req, res) => {
         
         
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
     
@@ -1652,7 +1653,7 @@ app.post("/completelevel.php", async (req, res) => {
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
                         if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
                     }
                     else (
@@ -1662,7 +1663,7 @@ app.post("/completelevel.php", async (req, res) => {
                 else {
                     res.status(200).send("Level completed")
                     if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
                 }
             }
@@ -1673,7 +1674,7 @@ app.post("/completelevel.php", async (req, res) => {
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
                         if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
                     }
                     else (
@@ -1689,7 +1690,7 @@ app.post("/completelevel.php", async (req, res) => {
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
                         if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
                     }
                     else (
@@ -1699,7 +1700,7 @@ app.post("/completelevel.php", async (req, res) => {
                 else {
                     res.status(200).send("Level completed")
                     if (verbose) {
-                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
                 }
                 }
@@ -1709,7 +1710,7 @@ app.post("/completelevel.php", async (req, res) => {
     else {
         res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
      }
@@ -1717,7 +1718,7 @@ app.post("/completelevel.php", async (req, res) => {
         res.status(400).send("Invalid format for level id")
      }
    } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 
@@ -1745,7 +1746,7 @@ app.post("/getprofile.php", async (req, res) => {
     }
      }
     } catch (err) {
-        console.log("<ERROR> " + err)
+        console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
     }
 
@@ -1776,12 +1777,12 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1823,12 +1824,12 @@ app.post("/moderation/getreports.php",async (req,res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1864,12 +1865,12 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1900,7 +1901,7 @@ if (results2.length > 0) {
         if (results4["affectedRows"] > 0) {
             res.status(200).send("Level reported")
                 if (verbose) {
-                    console.log("<INFO> " + req.body["username"] + " reported the level \"" + results2[0]["title"] + "\" by " + results2[0]["username"] + ".")
+                    console.log("\x1b[34m", "<INFO> " + req.body["username"] + " reported the level \"" + results2[0]["title"] + "\" by " + results2[0]["username"] + ".")
                 }
         }
     }
@@ -1913,12 +1914,12 @@ if (results2.length > 0) {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1938,7 +1939,7 @@ app.post("/delete.php", async (req, res) => {
                 if (results2["affectedRows"] > 0) {
                     res.status(200).send("Level deleted")
                     if (verbose) {
-                        console.log("<INFO> " + req.body["username"] + " deleted the level " + req.body["levelid"])
+                        console.log("\x1b[34m", "<INFO> " + req.body["username"] + " deleted the level " + req.body["levelid"])
                     }
                 }
                 else {
@@ -1953,12 +1954,12 @@ app.post("/delete.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1978,7 +1979,7 @@ app.post("/changelevelinfo.php", async (req, res) => {
                 if (results2["affectedRows"] > 0) {
                     res.status(200).send("Level info changed")
                     if (verbose) {
-                        console.log("<INFO> " + req.body["username"] + " changed the level info of " + req.body["levelid"])
+                        console.log("\x1b[34m", "<INFO> " + req.body["username"] + " changed the level info of " + req.body["levelid"])
                     }
                 }
                 else {
@@ -1993,12 +1994,12 @@ app.post("/changelevelinfo.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -2060,12 +2061,12 @@ app.post("/changeaccountinfo.php", async (req, res) => {
     else {
      res.status(401).send("Invalid Info")
             if (verbose) {
-                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+                console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
     }
      catch (err) {
-     console.log("<ERROR> " + err)
+     console.log("\x1b[31m", "<ERROR> " + err)
      res.status(400).end()
     }
 }) 
@@ -2080,11 +2081,11 @@ app.use((req, res, next)=>{
 
 
 if (disableSignatureCheck == true) {
-    console.warn("WARNING: Disabling the password signature check can be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+    console.warn("\x1b[33m","<WARN> Disabling the password signature check can be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
 }
 
 app.listen(port, () => {
     if (verbose) {
-        console.log("<INFO> Server started up on port " + port)
+        console.log("\x1b[34m", "<INFO> Server started up on port " + port)
     }
 })
