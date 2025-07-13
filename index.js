@@ -1526,7 +1526,9 @@ catch (err) {
 })
 
 app.post("/signup.php", async (req, res) => {
-    var usedusername = false
+    if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
+        if (req.body["password"].length >= 8) {
+             var usedusername = false
     const [results, fields] = await connection.query("SELECT username FROM bfdibranchesaccount")
     for (var i = 0; i < results.length; i++) {
         if (req.body["username"] == results[i]["username"]) {
@@ -1554,10 +1556,21 @@ app.post("/signup.php", async (req, res) => {
         }
         }
     }
+        }
+        else {
+            res.status(400).send("Invalid password format\n(Must be between 8-256 characters)")
+        }
+   
+}
+else {
+    res.status(400).send("Invalid username format\n(Letters a-z, numbers and underscores)")
+}
 })
 app.post("/login.php", async (req, res) => {
      try {
-        const [results, fields] =  await connection.query(
+          if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
+            if (req.body["password"].length >= 8) {
+                const [results, fields] =  await connection.query(
         'SELECT id, username, password FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
     );
     if (JSON.stringify(results) != "[]") {
@@ -1580,6 +1593,15 @@ app.post("/login.php", async (req, res) => {
                 console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+            }
+            else {
+                res.status(400).send("Invalid password format\n(Must be between 8-256 characters)")
+            }
+        }
+        else {
+            res.status(400).send("Invalid username format\n(Letters a-z, numbers and underscores)")
+        }
+        
         
     } catch (err) {
         console.log("<ERROR> " + err)
@@ -1980,6 +2002,75 @@ app.post("/changelevelinfo.php", async (req, res) => {
      res.status(400).end()
     }
 })
+
+function regexOutsideChecker(regex, content) {
+    if (content != "") {
+        var re = RegExp("[a-z_0-9]+")
+    var array = re.exec(content)
+    var length = 0
+    for (var i = 0; i < array.length; i++) {
+        length = length + array[i].length
+    }
+    if (length == content.length) {
+        return false;
+    }
+    else {
+        return true;
+    }
+    }
+    else {
+        return true;
+    }
+}
+app.post("/changeaccountinfo.php", async (req, res) => {
+     try {
+        const [results, fields] =  await connection.query(
+        'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
+    );
+
+    if (results.length > 0) {
+        if (regexOutsideChecker("[a-z_0-9]+", req.body["newusername"]) == false && req.body["newusername"].length >= 3) {
+            if (req.body["newpassword"].length >= 8) {
+        const [results1, fields1] = await connection.query("UPDATE bfdibranchesaccount SET username = ?, password = ? WHERE username = ? AND password = ?",[req.body["newusername"],req.body["newpassword"],req.body["username"],req.body["password"]])
+        if (results1["affectedRows"] > 0) {
+            const [results2, fields2] = await connection.query("SELECT id FROM bfdibranchesaccount WHERE username = ?", [req.body["newusername"]])
+            if (results2.length > 0) {
+                      var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettestthatis256b',{algorithm: 'HS256'})
+        res.set({
+            'X-Powered-By': 'Express',
+            'Content-Type': 'text/html; charset=utf-8',
+            'X-Token': token
+        })
+                res.status(200).send("Changed Info\nYour User ID: " + results2[0]["id"])
+            }
+            else {
+                res.status(500).end()
+            }
+        }
+            }
+            else {
+                res.status(400).send("Invalid password format\n(Must be between 8-256 characters)")
+            }
+
+        }
+    else {
+        res.status(400).send("Invalid username format\n(Letters a-z, numbers and underscores)")
+    }
+    }
+    else {
+     res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
+    }
+    }
+     catch (err) {
+     console.log("<ERROR> " + err)
+     res.status(400).end()
+    }
+}) 
+
+
 app.use((req, res, next)=>{
   res.status(404).send({message:"Not Found"});
   console.log("NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\"")
