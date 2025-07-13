@@ -18,6 +18,7 @@ var port = 3000
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to strtovar()
 var verbose = false //Logs more info
+var trolladminurl = true //trolls people by rickrolling when someone tries to go to /admin
 
 app.use(express.json())
 
@@ -35,10 +36,22 @@ app.get('/', (req, res) => {
     //obviously
     res.status(200).send('OK');
     if (verbose) {
-        console.log("<INFO> The server has been pinged by " + req.ip)
+        console.log("\x1b[34m", "<INFO> The server has been pinged by " + req.ip)
     }
 });
 
+if (trolladminurl == true) {
+    app.get('/admin', (req, res) => {
+        res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share")
+        if (verbose) {
+            console.log("\x1b[34m", "<INFO> " + req.ip + " tried to go to /admin, redirected to rickroll")
+        }
+    })
+}
+
+app.get('/favicon.ico', (req,res) => {
+    res.status(404).send({message:"Not Found"});
+})
 
 app.get('/version.php', (req, res) => {
     //Always gives out result from the variable
@@ -237,6 +250,9 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
 
         if (results1["affectedRows"] > 0) {
             res.send("1234567890")
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " opened their weekly reward.")
+            }
         }
         else {
             res.status(400).end()
@@ -2074,8 +2090,7 @@ app.post("/changeaccountinfo.php", async (req, res) => {
 
 app.use((req, res, next)=>{
   res.status(404).send({message:"Not Found"});
-  console.log("NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\"")
-  console.log(req.body)
+  console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\"")
 });
 
 
