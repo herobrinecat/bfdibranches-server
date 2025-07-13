@@ -27,7 +27,7 @@ CREATE TABLE `bfdibranchesaccount` (
   `points` bigint NOT NULL DEFAULT '0',
   `user_rank` bigint NOT NULL DEFAULT '1',
   `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `bio` varchar(2000) DEFAULT '',
   `date` varchar(255) DEFAULT NULL,
   `branchcoins` bigint DEFAULT '0',
@@ -138,4 +138,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-11  9:45:50
+-- Dump completed on 2025-07-12 22:50:03

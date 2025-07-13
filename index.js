@@ -1470,7 +1470,7 @@ app.post("/signup.php", async (req, res) => {
         const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline,user_rank) VALUES (?, ?, ?, ?,?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(),parseInt(results.length + 1)])
 
         if (results1["affectedRows"] > 0) {
-              var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettest',{algorithm: 'HS256'})
+              var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettestthatis256b',{algorithm: 'HS256'})
         res.set({
             'X-Powered-By': 'Express',
             'Content-Type': 'text/html; charset=utf-8',
@@ -1486,7 +1486,7 @@ app.post("/login.php", async (req, res) => {
         'SELECT id, username, password FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
     );
     if (JSON.stringify(results) != "[]") {
-        var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettest',{algorithm: 'HS256'})
+        var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettestthatis256b',{algorithm: 'HS256'})
         res.set({
             'X-Powered-By': 'Express',
             'Content-Type': 'text/html; charset=utf-8',
@@ -1509,7 +1509,16 @@ app.post("/login.php", async (req, res) => {
 })
 function parseJwt (token) {
     try {
-        return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var result = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+        var checktoken = jwt.sign(result, "bfdibranchessecrettestthatis256b", { algorithm: "HS256" })
+
+        if (checktoken == token) {
+            return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        }
+        else {
+            return "INVALID"
+        }
+        
     }
     catch (err) {
         return "INVALID"
