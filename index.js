@@ -13,6 +13,12 @@ const app = express()
 var shopitems = '{ "fg": { "69": 1000, "73": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "68": 1000, "67": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
 var version = "0.1.6.2"
 var port = 3000
+
+//settings
+var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
+var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to strtovar()
+var verbose = false //Logs more info
+
 app.use(express.json())
 
 const connection = await mysql.createConnection({
@@ -28,6 +34,9 @@ const connection = await mysql.createConnection({
 app.get('/', (req, res) => {
     //obviously
     res.status(200).send('OK');
+    if (verbose) {
+        console.log("<INFO> The server has been pinged by " + req.ip)
+    }
 });
 
 
@@ -74,6 +83,9 @@ app.post("/editpfp.php", async (req,res) => {
                      const [results2, fields2] = await connection.query('UPDATE bfdibrancheslevel SET foreground = ?,background = ? WHERE username = ?',[req.body["foreground"],req.body["background"],req.body["username"]])
                 if (results2["affectedRows"] > 0) {
                      res.status(200).end()
+                     if (verbose) {
+                        console.log("<INFO> " + req.body["username"] + " changed their profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] + "!")
+                     }
 
                 }
                 else {
@@ -83,16 +95,21 @@ app.post("/editpfp.php", async (req,res) => {
                
             }
             else {
-                res.status(400)
-                res.send("You don't own this pfp")
+                res.status(400).send("You don't own this pfp")
+                if (verbose) {
+                    console.log("<INFO> " + req.body["username"] +  "(" + req.ip + "*) attempted to change the profile picture to FG: " + req.body["foreground"] + " and BG: " + req.body["background"] +", but doesn't own it!")
+                }
             }
         }
         else {
-            res.status(401)
-            res.send("Invalid Info")
+            res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
+            
         }
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -105,12 +122,18 @@ app.post('/editprofile.php', async (req, res) => {
     );
         if (results["affectedRows"] > 0) {
             res.status(200).send("Changed bio")
+            if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " edited their bio.")
+            }
         }
         else {
             res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
         }
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -127,10 +150,18 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
         results[i]["points"] = results[i]["points"].toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
+        if (usernameColorBadgesExploitFix) {
+        if (results[i]["usernameColor"].startsWith("Object(")) {
+            results[i]["usernameColor"] = "[0,0]"
+        }
+        if (results[i]["badges"].startsWith("Object(")) {
+            results[i]["badges"] = "[]"
+        }
+    }
     }
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -148,10 +179,18 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
         results[i]["points"] = results[i]["points"].toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
+        if (usernameColorBadgesExploitFix) {
+        if (results[i]["usernameColor"].startsWith("Object(")) {
+            results[i]["usernameColor"] = "[0,0]"
+        }
+        if (results[i]["badges"].startsWith("Object(")) {
+            results[i]["badges"] = "[]"
+        }
+    }
     }
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 })
@@ -175,10 +214,13 @@ app.post("/getpfpinventory.php", async (req, res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -202,10 +244,13 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
 }
 catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -221,7 +266,6 @@ app.post("/pfpshop.php", async (req, res) => {
         var foregrounds1 = results[0]["foregroundsowned"]
         var backgrounds1 = results[0]["backgroundsowned"]
         if (req.body["mode"] == "get") {
-            res.status(206)
             var result = ""
             for (var i = 0; i < results[0]["foregroundsowned"].split(',').length; i++) {
                 var foregrounds = results[0]["foregroundsowned"].slice(0,-1).slice(1).split(',')
@@ -236,7 +280,7 @@ app.post("/pfpshop.php", async (req, res) => {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
                     }     
             }
-            res.send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
+            res.status(206).send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
         }
         else if (req.body["mode"] == "buy") {
             if (req.body["pfptype"] == 0) {
@@ -244,12 +288,13 @@ app.post("/pfpshop.php", async (req, res) => {
             if (results[0]["branchcoins"] >= shopitemsobject["fg"][req.body["pfpid"]]) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, foregroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["fg"][req.body["pfpid"]]), foregrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
-            res.status(200)
-            res.send("1234567890")
+            res.status(200).send("1234567890")
+            if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (FG).")
+            }
         }
         else {
-            res.status(401)
-            res.send("um")
+            res.status(401).send("um")
         }
             }
             }
@@ -258,24 +303,25 @@ app.post("/pfpshop.php", async (req, res) => {
             if (results[0]["branchcoins"] >= shopitemsobject["bg"][req.body["pfpid"]]) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, backgroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["bg"][req.body["pfpid"]]), backgrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])   
                 if (results1["affectedRows"] > 0) {
-            res.status(200)
-            res.send("1234567890")
+            res.status(200).send("1234567890")
+            console.log("<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
         }
         else {
-            res.status(401)
-            res.send("um")
+            res.status(401).send("um")
         }
             }
             }
         }
     }
     else {
-     res.status(401)
-     res.send("Invalid Info")
+     res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -299,10 +345,13 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -315,6 +364,9 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     );
     if (results.length > 0) {
         res.send(results)
+        if (verbose) {
+            console.log("<INFO> " + req.ip + " requested level " + req.params.id + ". (GET)")
+        }
     }
     else {
         res.status(404).end()
@@ -348,10 +400,13 @@ app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
 let isnum = /^\d+$/.test(req.params.id)
     if (isnum) {
         const [results, fields] =  await connection.query(
-        'SELECT data,dataLen FROM bfdibrancheslevel WHERE id = ?',[req.params.id]
+        'SELECT data,dataLen FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.params.id]
     );
     if (results.length > 0) {
         res.send(results)
+                if (verbose) {
+            console.log("<INFO> " + req.ip + " requested level " + req.params.id + ". (POST)")
+        }
     }
     else {
         res.status(400).end()
@@ -364,7 +419,8 @@ let isnum = /^\d+$/.test(req.params.id)
 
 app.post("/getlist.php", async (req, res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+     if (req.headers["x-branches-version"] == version) {
+           var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -372,6 +428,9 @@ app.post("/getlist.php", async (req, res) => {
     if (req.body["password"] != "" || req.body["username"] != "") {
         if (results.length == 0) {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
      return
     }
     }
@@ -1396,9 +1455,13 @@ app.post("/getlist.php", async (req, res) => {
         }  
     }
 
+     }
+     else {
+        res.status(400).send("Please update Branches!")
+     }
 }
 catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })  
@@ -1422,6 +1485,9 @@ app.post("/upload.php", async (req, res) => {
 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
         if (results2["affectedRows"] > 0) {
             res.status(200).send("Published!")
+            if (verbose) {
+                console.log("<INFO> " + req.body['username'] + " published the level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
+            }
         }
         else {
             res.status(400).send("Something went wrong")
@@ -1437,6 +1503,9 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(),results[0]["background"],results[0]["foreground"],version])
         if (results1["affectedRows"] > 0) {
             res.status(200).send("Published!")
+             if (verbose) {
+                console.log("<INFO> " + req.body['username'] + " replaced level id of " + req.body["replaceid"] + " with level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
+            }
         }
         else {
             res.status(400).send("Something went wrong")
@@ -1445,10 +1514,13 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
 }
 catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1477,6 +1549,9 @@ app.post("/signup.php", async (req, res) => {
             'X-Token': token
         })
         res.send("Account Created!\nYour ID is " + (parseInt(results.length) + 1).toString())
+        if (verbose) {
+            console.log("<INFO> " + req.body["username"] + "is created by " + req.ip + ".")
+        }
         }
     }
 })
@@ -1493,16 +1568,21 @@ app.post("/login.php", async (req, res) => {
             'X-Token': token
         })
         res.send("Your User ID: " + results[0]["id"])
-        
+        if (verbose) {
+            console.log("<INFO> " + req.ip + " logged in to the account \"" + req.body["username"] + "\"")
+        }
         
         
     }
     else {
         res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
         
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
     
@@ -1510,13 +1590,19 @@ app.post("/login.php", async (req, res) => {
 function parseJwt (token) {
     try {
         var result = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+
+        if (disableSignatureCheck == false) {
         var checktoken = jwt.sign(result, "bfdibranchessecrettestthatis256b", { algorithm: "HS256" })
 
         if (checktoken == token) {
-            return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+            return result
         }
         else {
             return "INVALID"
+        }
+        }
+        else {
+            return result
         }
         
     }
@@ -1533,15 +1619,19 @@ app.post("/completelevel.php", async (req, res) => {
         var password = parseJwt(req.body["password"])["password"]
     const [results, fields] = await connection.query("SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
-        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
+        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
         if (results2.length > 0) {
             
             if (results2[0]["peoplebeaten"].toString().includes("," + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().startsWith("[" + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().endsWith("," + results[0]["id"].toString() + "]") || results2[0]["peoplebeaten"] == "[" + results[0]["id"].toString() + "]") {
                 if (parseFloat(req.body["time"]) < parseFloat(results2[0]["worldrecordtime"])) {
+                    if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
+                        if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                         }
                     }
                     else (
                         res.status(400).end()
@@ -1549,13 +1639,20 @@ app.post("/completelevel.php", async (req, res) => {
                 }
                 else {
                     res.status(200).send("Level completed")
+                    if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                         }
                 }
             }
             else {
                 if (results2[0]["peoplebeaten"] == "[]") {
+                    if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ?,worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
+                        if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                         }
                     }
                     else (
                         res.status(400).end()
@@ -1564,10 +1661,14 @@ app.post("/completelevel.php", async (req, res) => {
                 else {
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ? WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + "," + results[0]["id"].toString() + "]",req.body["username"], parseInt(req.body["levelid"])])
                  if (parseFloat(req.body["time"]) > parseFloat(results2[0]["worldrecordtime"])) {
+                    if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [resultt4, fields4] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     
                     if (results3["affectedRows"] > 0) {
                         res.status(200).send("Level completed")
+                        if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                         }
                     }
                     else (
                         res.status(400).end()
@@ -1575,6 +1676,9 @@ app.post("/completelevel.php", async (req, res) => {
                 }
                 else {
                     res.status(200).send("Level completed")
+                    if (verbose) {
+                console.log("<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
+                         }
                 }
                 }
             }
@@ -1582,13 +1686,16 @@ app.post("/completelevel.php", async (req, res) => {
     }
     else {
         res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
      }
      else {
         res.status(400).send("Invalid format for level id")
      }
    } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 
@@ -1599,9 +1706,24 @@ app.post("/getprofile.php", async (req, res) => {
         'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
     );
 
-   if (JSON.stringify(results).replace("[{","{").replace("}]","}").length == 2) { res.send("{}") } else { res.send(results[0]) }
+   if (results.length == 0) 
+    { res.send("{}") } 
+   else { 
+    if (usernameColorBadgesExploitFix == false) {
+        res.send(results[0])
+    }
+    else {
+        if (results[0]["usernameColor"].startsWith("Object(")) {
+            results[0]["usernameColor"] = "[0,0]"
+        }
+        if (results[0]["badges"].startsWith("Object(")) {
+            results[0]["badges"] = "[]"
+        }
+        res.send(results[0])
+    }
+     }
     } catch (err) {
-        console.log(err)
+        console.log("<ERROR> " + err)
         res.status(400).end()
     }
 
@@ -1631,10 +1753,13 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1675,10 +1800,13 @@ app.post("/moderation/getreports.php",async (req,res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1698,6 +1826,7 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
             const [results1, fields1] = await connection.query("UPDATE bfdibrancheslevel SET spotlight = ?, difficulty = ? WHERE id = ?", [req.body["spotlight"], req.body["difficulty"],req.body["levelid"]])
             if (results1["affectedRows"] > 0) {
                 res.status(200).send("Level changed!")
+
             }
             else {
                 res.status(400).send("Something went wrong")
@@ -1712,10 +1841,13 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1745,6 +1877,9 @@ if (results2.length > 0) {
     );
         if (results4["affectedRows"] > 0) {
             res.status(200).send("Level reported")
+                if (verbose) {
+                    console.log("<INFO> " + req.body["username"] + " reported the level \"" + results2[0]["title"] + "\" by " + results2[0]["username"] + ".")
+                }
         }
     }
 }
@@ -1755,26 +1890,17 @@ if (results2.length > 0) {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
-app.post("/getprofile.php", async (req, res) => {
-    try {
-        const [results, fields] =  await connection.query(
-        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
-    );
 
-   if (results.length <= 0) { res.send("{}") } else { res.send(results[0]) }
-    } catch (err) {
-        console.log(err)
-        res.status(400).end()
-    }
-
-})
 app.post("/delete.php", async (req, res) => {
      try {
         var password = parseJwt(req.body["password"])["password"]
@@ -1789,6 +1915,9 @@ app.post("/delete.php", async (req, res) => {
                 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET deleted = 1 WHERE id = ?", [req.body["levelid"]])
                 if (results2["affectedRows"] > 0) {
                     res.status(200).send("Level deleted")
+                    if (verbose) {
+                        console.log("<INFO> " + req.body["username"] + " deleted the level " + req.body["levelid"])
+                    }
                 }
                 else {
                     res.status(500).send("Something went wrong")
@@ -1801,10 +1930,13 @@ app.post("/delete.php", async (req, res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1823,6 +1955,9 @@ app.post("/changelevelinfo.php", async (req, res) => {
                 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET description = ?, icon = ?, title = ? WHERE id = ?", [req.body["newdescription"],req.body["newicon"],req.body["newtitle"],req.body["levelid"]])
                 if (results2["affectedRows"] > 0) {
                     res.status(200).send("Level info changed")
+                    if (verbose) {
+                        console.log("<INFO> " + req.body["username"] + " changed the level info of " + req.body["levelid"])
+                    }
                 }
                 else {
                     res.status(500).send("Something went wrong")
@@ -1835,10 +1970,13 @@ app.post("/changelevelinfo.php", async (req, res) => {
     }
     else {
      res.status(401).send("Invalid Info")
+            if (verbose) {
+                console.log("<INFO> " + req.ip + " attempted to access with an invalid info.")
+            }
     }
     }
      catch (err) {
-     console.log(err)
+     console.log("<ERROR> " + err)
      res.status(400).end()
     }
 })
@@ -1848,4 +1986,14 @@ app.use((req, res, next)=>{
   console.log(req.body)
 });
 
-app.listen(port)
+
+
+if (disableSignatureCheck == true) {
+    console.warn("WARNING: Disabling the password signature check can be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+}
+
+app.listen(port, () => {
+    if (verbose) {
+        console.log("<INFO> Server started up on port " + port)
+    }
+})
