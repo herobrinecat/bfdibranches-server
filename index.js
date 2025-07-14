@@ -18,7 +18,7 @@ var port = 3000
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to strtovar()
 var verbose = false //Logs more info
-var trolladminurl = true //trolls people by rickrolling when someone tries to go to /admin
+var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 
 app.use(express.json())
 
@@ -2087,7 +2087,10 @@ app.post("/changeaccountinfo.php", async (req, res) => {
     }
 }) 
 
-
+app.post("/forgotpassword/passwordreset.php", (req, res) => {
+    console.log("\x1b[34m", "<STUB> /forgotpassword/passwordreset.php return 501")
+    res.status(501).end()
+})
 app.use((req, res, next)=>{
   res.status(404).send({message:"Not Found"});
   console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\"")
