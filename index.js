@@ -130,7 +130,7 @@ app.post("/editpfp.php", async (req,res) => {
        
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 })
 app.post('/editprofile.php', async (req, res) => {
@@ -154,7 +154,7 @@ app.post('/editprofile.php', async (req, res) => {
         }
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 })
 app.get("/static/leaderboards/0.json", async (req, res) => {
@@ -182,7 +182,7 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 })
 
@@ -211,7 +211,7 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
         res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 })
 
@@ -248,7 +248,7 @@ app.post("/getpfpinventory.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -288,7 +288,7 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 app.post("/pfpshop.php", async (req, res) => {
@@ -366,7 +366,7 @@ app.post("/pfpshop.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 app.post("/moderation/checkifmoderator.php", async (req, res) => {
@@ -403,7 +403,7 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -1541,7 +1541,7 @@ app.post("/getlist.php", async (req, res) => {
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })  
 
@@ -1572,7 +1572,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
             }
         }
         else {
-            res.status(400).send("Something went wrong")
+            res.status(400).end()
         }
         }
             }
@@ -1590,7 +1590,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
             }
         }
         else {
-            res.status(400).send("Something went wrong")
+            res.status(400).end()
         }
         }
     }
@@ -1602,7 +1602,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
     }
         }
         else {
-            res.status(400).end()
+            res.status(500).end()
         }
         
 }
@@ -1711,7 +1711,7 @@ app.post("/login.php", async (req, res) => {
         
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
     
 })
@@ -1831,7 +1831,7 @@ app.post("/completelevel.php", async (req, res) => {
      
    } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 
 }) 
@@ -1866,7 +1866,7 @@ app.post("/getprofile.php", async (req, res) => {
       
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(400).end()
+        res.status(500).end()
     }
 
 })
@@ -1909,7 +1909,7 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -1963,7 +1963,7 @@ app.post("/moderation/getreports.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -2011,7 +2011,7 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -2067,7 +2067,7 @@ if (results2.length > 0) {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -2114,7 +2114,7 @@ app.post("/delete.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -2161,7 +2161,7 @@ app.post("/changelevelinfo.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
@@ -2235,7 +2235,7 @@ app.post("/changeaccountinfo.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 }) 
 
