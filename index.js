@@ -19,7 +19,7 @@ var disableSignatureCheck = false //Disables the signature check when checking i
 var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to strtovar()
 var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
-
+var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 app.use(express.json())
 
 const connection = await mysql.createConnection({
@@ -66,7 +66,9 @@ app.post('/version.php', (req, res) => {
 app.post("/editpfp.php", async (req,res) => {
     //edit profile picture here
      try {
-        var password = parseJwt(req.body["password"])["password"]
+
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) {
+             var password = parseJwt(req.body["password"])["password"]
         
          var [results, fields] =  await connection.query(
         'SELECT foregroundsowned, backgroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
@@ -121,6 +123,11 @@ app.post("/editpfp.php", async (req,res) => {
             }
             
         }
+        }
+        else {
+            res.status(400).end()
+        }
+       
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
@@ -216,7 +223,9 @@ app.get("/static/pfpshopitems.json", (req, res) => {
 })
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT foreground, background, branchcoins, backgroundsowned, foregroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -231,6 +240,11 @@ app.post("/getpfpinventory.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -240,7 +254,9 @@ app.post("/getpfpinventory.php", async (req, res) => {
 
 app.post("/weeklyreward/reward.php", async (req, res) => {
      try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         var [results, fields] =  await connection.query(
         'SELECT branchcoins,rewardavailable FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -264,6 +280,11 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -272,7 +293,9 @@ catch (err) {
 })
 app.post("/pfpshop.php", async (req, res) => {
      try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+             var password = parseJwt(req.body["password"])["password"]
         var [results, fields] =  await connection.query(
         'SELECT branchcoins,foregroundsowned,backgroundsowned,rewardavailable FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -335,6 +358,11 @@ app.post("/pfpshop.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+       
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -343,7 +371,9 @@ app.post("/pfpshop.php", async (req, res) => {
 })
 app.post("/moderation/checkifmoderator.php", async (req, res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -365,6 +395,11 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -373,7 +408,8 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
 })
 
 app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
-    let isnum = /^\d+$/.test(req.params.id)
+    try {
+        let isnum = /^\d+$/.test(req.params.id)
     if (isnum) {
         const [results, fields] =  await connection.query(
         'SELECT data,dataLen FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.params.id]
@@ -391,11 +427,17 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     else {
         res.status(400).end()
     }
+    } catch (err) {
+        console.log("\x1b[31m", "<ERROR> " + err)
+     res.status(500).end()
+    }
 })
 
 app.post("/getlevel.php", async (req, res) => {
-let isnum = /^\d+$/.test(req.body["id"].toString())
-console.log("t")
+    try {
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            let isnum = /^\d+$/.test(req.body["id"].toString())
     if (isnum) {
         const [results, fields] =  await connection.query(
         'SELECT data,dataLen,version FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.body["id"]]
@@ -410,10 +452,20 @@ console.log("t")
     else {
         res.status(400).end()
     }
+        }
+        else {
+            res.status(400).end()
+        }
+    } catch (err) {
+     console.log("\x1b[31m", "<ERROR> " + err)
+     res.status(500).end()
+    }
+
 })
 
 app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
-let isnum = /^\d+$/.test(req.params.id)
+    try {
+        let isnum = /^\d+$/.test(req.params.id)
     if (isnum) {
         const [results, fields] =  await connection.query(
         'SELECT data,dataLen FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.params.id]
@@ -431,11 +483,17 @@ let isnum = /^\d+$/.test(req.params.id)
     else {
         res.status(400).end()
     }
+    } catch (err) {
+    console.log("\x1b[31m", "<ERROR> " + err)
+     res.status(500).end()
+    }
 })
 
 app.post("/getlist.php", async (req, res) => {
     try {
-     if (req.headers["x-branches-version"] == version) {
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            if (req.headers["x-branches-version"] == version) {
            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
@@ -1475,6 +1533,11 @@ app.post("/getlist.php", async (req, res) => {
      else {
         res.status(400).send("Please update Branches!")
      }
+        }
+        else {
+            res.status(400).end()
+        }
+     
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1485,7 +1548,9 @@ catch (err) {
 
 app.post("/upload.php", async (req, res) => {
       try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id, background, foreground FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1535,15 +1600,23 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
+     res.status(500).end()
     }
 })
 
 app.post("/signup.php", async (req, res) => {
-    if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
+    try {
+if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
         if (req.body["password"].length >= 8) {
              var usedusername = false
     const [results, fields] = await connection.query("SELECT username FROM bfdibranchesaccount")
@@ -1582,10 +1655,21 @@ app.post("/signup.php", async (req, res) => {
 else {
     res.status(400).send("Invalid username format\n(Letters a-z, numbers and underscores)")
 }
+        }
+        else {
+            res.status(400).end()
+        }
+    } catch (err) {
+     console.log("\x1b[31m", "<ERROR> " + err)
+     res.status(500).end()
+    }
+    
 })
 app.post("/login.php", async (req, res) => {
      try {
-          if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
             if (req.body["password"].length >= 8) {
                 const [results, fields] =  await connection.query(
         'SELECT id, username, password FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
@@ -1618,6 +1702,11 @@ app.post("/login.php", async (req, res) => {
         else {
             res.status(400).send("Invalid username format\n(Letters a-z, numbers and underscores)")
         }
+        }
+        else {
+            res.status(400).end()
+        }
+          
         
         
     } catch (err) {
@@ -1653,7 +1742,9 @@ function parseJwt (token) {
 app.post("/completelevel.php", async (req, res) => {
    try {
     // don't cheat!!!
-     let isnum = /^\d+$/.test(req.body["levelid"])
+    if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
         var password = parseJwt(req.body["password"])["password"]
     const [results, fields] = await connection.query("SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
@@ -1733,6 +1824,11 @@ app.post("/completelevel.php", async (req, res) => {
      else {
         res.status(400).send("Invalid format for level id")
      }
+        }
+        else {
+            res.status(400).end()
+        }
+     
    } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
@@ -1741,7 +1837,9 @@ app.post("/completelevel.php", async (req, res) => {
 }) 
 app.post("/getprofile.php", async (req, res) => {
     try {
-        const [results, fields] =  await connection.query(
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+              const [results, fields] =  await connection.query(
         'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
     );
 
@@ -1761,6 +1859,11 @@ app.post("/getprofile.php", async (req, res) => {
         res.send(results[0])
     }
      }
+        }
+        else {
+            res.status(400).end()
+        }
+      
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
@@ -1770,7 +1873,9 @@ app.post("/getprofile.php", async (req, res) => {
 
 app.post("/moderation/getlevelinfo.php",async (req,res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1796,6 +1901,11 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+       
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1805,7 +1915,9 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
 
 app.post("/moderation/getreports.php",async (req,res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1843,6 +1955,11 @@ app.post("/moderation/getreports.php",async (req,res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+       
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1852,7 +1969,9 @@ app.post("/moderation/getreports.php",async (req,res) => {
 
 app.post("/moderation/changelevelinfo.php",async (req,res) => {
     try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1884,6 +2003,11 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1893,7 +2017,9 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
 
 app.post("/reportlevel.php", async (req, res) => {
         try {
-        var password = parseJwt(req.body["password"])["password"]
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1933,6 +2059,11 @@ if (results2.length > 0) {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+       
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1942,7 +2073,9 @@ if (results2.length > 0) {
 
 app.post("/delete.php", async (req, res) => {
      try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1973,6 +2106,11 @@ app.post("/delete.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1982,7 +2120,9 @@ app.post("/delete.php", async (req, res) => {
 
 app.post("/changelevelinfo.php", async (req, res) => {
       try {
-        var password = parseJwt(req.body["password"])["password"]
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+               var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2013,6 +2153,11 @@ app.post("/changelevelinfo.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+     
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2041,7 +2186,9 @@ function regexOutsideChecker(regex, content) {
 }
 app.post("/changeaccountinfo.php", async (req, res) => {
      try {
-        const [results, fields] =  await connection.query(
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        {
+            const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
     );
 
@@ -2080,6 +2227,11 @@ app.post("/changeaccountinfo.php", async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
     }
+        }
+        else {
+            res.status(400).end()
+        }
+        
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
