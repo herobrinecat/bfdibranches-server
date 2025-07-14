@@ -67,7 +67,7 @@ app.post("/editpfp.php", async (req,res) => {
     //edit profile picture here
      try {
 
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) {
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) {
              var password = parseJwt(req.body["password"])["password"]
         
          var [results, fields] =  await connection.query(
@@ -223,7 +223,7 @@ app.get("/static/pfpshopitems.json", (req, res) => {
 })
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -254,7 +254,7 @@ app.post("/getpfpinventory.php", async (req, res) => {
 
 app.post("/weeklyreward/reward.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         var [results, fields] =  await connection.query(
@@ -293,7 +293,7 @@ catch (err) {
 })
 app.post("/pfpshop.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
              var password = parseJwt(req.body["password"])["password"]
         var [results, fields] =  await connection.query(
@@ -371,7 +371,7 @@ app.post("/pfpshop.php", async (req, res) => {
 })
 app.post("/moderation/checkifmoderator.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -435,7 +435,7 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
 
 app.post("/getlevel.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             let isnum = /^\d+$/.test(req.body["id"].toString())
     if (isnum) {
@@ -491,7 +491,7 @@ app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
 
 app.post("/getlist.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             if (req.headers["x-branches-version"] == version) {
            var password = parseJwt(req.body["password"])["password"]
@@ -1548,7 +1548,7 @@ catch (err) {
 
 app.post("/upload.php", async (req, res) => {
       try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -1614,7 +1614,7 @@ catch (err) {
 
 app.post("/signup.php", async (req, res) => {
     try {
-if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
         if (req.body["password"].length >= 8) {
@@ -1667,7 +1667,7 @@ else {
 })
 app.post("/login.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             if (regexOutsideChecker("[a-z_0-9]+", req.body["username"]) == false && req.body["username"].length >= 3) {
             if (req.body["password"].length >= 8) {
@@ -1742,7 +1742,7 @@ function parseJwt (token) {
 app.post("/completelevel.php", async (req, res) => {
    try {
     // don't cheat!!!
-    if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+    if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
@@ -1837,7 +1837,7 @@ app.post("/completelevel.php", async (req, res) => {
 }) 
 app.post("/getprofile.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
               const [results, fields] =  await connection.query(
         'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
@@ -1873,7 +1873,7 @@ app.post("/getprofile.php", async (req, res) => {
 
 app.post("/moderation/getlevelinfo.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
              var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -1915,7 +1915,7 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
 
 app.post("/moderation/getreports.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
              var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -1969,7 +1969,7 @@ app.post("/moderation/getreports.php",async (req,res) => {
 
 app.post("/moderation/changelevelinfo.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -2017,7 +2017,7 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
 
 app.post("/reportlevel.php", async (req, res) => {
         try {
-            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
              var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -2073,7 +2073,7 @@ if (results2.length > 0) {
 
 app.post("/delete.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -2120,7 +2120,7 @@ app.post("/delete.php", async (req, res) => {
 
 app.post("/changelevelinfo.php", async (req, res) => {
       try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
                var password = parseJwt(req.body["password"])["password"]
         const [results, fields] =  await connection.query(
@@ -2186,7 +2186,7 @@ function regexOutsideChecker(regex, content) {
 }
 app.post("/changeaccountinfo.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine/")) 
+        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
@@ -2245,7 +2245,7 @@ app.post("/forgotpassword/passwordreset.php", (req, res) => {
 })
 app.use((req, res, next)=>{
   res.status(404).send({message:"Not Found"});
-  console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\"")
+  console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\" (" + req.method + ")")
 });
 
 
