@@ -1667,7 +1667,7 @@ app.post("/completelevel.php", async (req, res) => {
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     
                     if (results3["affectedRows"] > 0) {
-                        res.status(200).send("Level completed")
+                        res.status(200).end()
                         if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
@@ -1677,7 +1677,7 @@ app.post("/completelevel.php", async (req, res) => {
                     )
                 }
                 else {
-                    res.status(200).send("Level completed")
+                    res.status(200).end()
                     if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
@@ -1688,7 +1688,7 @@ app.post("/completelevel.php", async (req, res) => {
                     if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ?,worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     if (results3["affectedRows"] > 0) {
-                        res.status(200).send("Level completed")
+                        res.status(200).end()
                         if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
