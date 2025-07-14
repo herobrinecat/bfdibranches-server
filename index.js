@@ -1642,7 +1642,7 @@ if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && re
         })
         res.send("Account Created!\nYour ID is " + (parseInt(results.length) + 1).toString())
         if (verbose) {
-            console.log("\x1b[34m", "<INFO> " + req.body["username"] + "is created by " + req.ip + ".")
+            console.log("\x1b[34m", "<INFO> " + req.body["username"] + " has been created by " + req.ip + ".")
         }
         }
     }
