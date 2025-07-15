@@ -25,7 +25,6 @@ DROP TABLE IF EXISTS `bfdibranchesaccount`;
 CREATE TABLE `bfdibranchesaccount` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `points` bigint NOT NULL DEFAULT '0',
-  `user_rank` bigint NOT NULL DEFAULT '1',
   `username` varchar(255) NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `bio` varchar(2000) DEFAULT '',

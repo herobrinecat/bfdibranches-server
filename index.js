@@ -160,7 +160,7 @@ app.post('/editprofile.php', async (req, res) => {
 app.get("/static/leaderboards/0.json", async (req, res) => {
     try {
         const [results, fields] =  await connection.query(
-        'SELECT id, points, user_rank, username,foreground,background,frame,usernameColor,bio,date,branchcoins,moderator,badges FROM bfdibranchesaccount ORDER BY user_rank LIMIT 100'
+        'SELECT id, points, username,foreground,background,frame,usernameColor,bio,date,branchcoins,moderator,badges FROM bfdibranchesaccount ORDER BY points DESC LIMIT 100'
     );
         for (var i = 0; i < results.length; i++) {
         results[i]["id"] =  results[i]["id"].toString()
@@ -168,6 +168,7 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
         results[i]["background"] =  results[i]["background"].toString()
         results[i]["moderator"] =  results[i]["moderator"].toString()
         results[i]["points"] = results[i]["points"].toString()
+        results[i]["user_rank"] = (i + 1).toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
         if (usernameColorBadgesExploitFix) {
@@ -189,7 +190,7 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
 app.post("/static/leaderboards/0.json", async (req, res) => {
     try {
         const [results, fields] =  await connection.query(
-        'SELECT id, points, user_rank, username,foreground,background,frame,usernameColor,bio,date,branchcoins,moderator,badges FROM bfdibranchesaccount ORDER BY user_rank LIMIT 100'
+        'SELECT id, points, username,foreground,background,frame,usernameColor,bio,date,branchcoins,moderator,badges FROM bfdibranchesaccount ORDER BY points DESC LIMIT 100'
     );
         for (var i = 0; i < results.length; i++) {
         results[i]["id"] =  results[i]["id"].toString()
@@ -197,6 +198,7 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
         results[i]["background"] =  results[i]["background"].toString()
         results[i]["moderator"] =  results[i]["moderator"].toString()
         results[i]["points"] = results[i]["points"].toString()
+        results[i]["user_rank"] = (i + 1).toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
         if (usernameColorBadgesExploitFix) {
@@ -1631,7 +1633,7 @@ if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && re
     }
     else {
         var datet = new Date(Date.now())
-        const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline,user_rank) VALUES (?, ?, ?, ?,?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(),parseInt(results.length + 1)])
+        const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline) VALUES (?, ?, ?, ?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes(), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate() + " " + datet.getHours() + ":" + datet.getMinutes()])
 
         if (results1["affectedRows"] > 0) {
               var token = jwt.sign({"password":req.body["password"]}, 'bfdibranchessecrettestthatis256b',{algorithm: 'HS256'})
