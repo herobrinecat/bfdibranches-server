@@ -16,7 +16,7 @@ var port = 3000
 
 //settings
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
-var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to strtovar()
+var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var()
 var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
@@ -2316,7 +2316,7 @@ app.use((req, res, next)=>{
 
 
 if (disableSignatureCheck == true) {
-    console.warn("\x1b[33m","<WARN> Disabling the password signature check can be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+    console.warn("\x1b[33m","<WARN> Disabling the password signature check can cause the server to be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
 }
 
 app.listen(port, () => {
