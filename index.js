@@ -1749,9 +1749,9 @@ app.post("/completelevel.php", async (req, res) => {
             let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
         var password = parseJwt(req.body["password"])["password"]
-    const [results, fields] = await connection.query("SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
+    const [results, fields] = await connection.query("SELECT id, branchcoins, points FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
-        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
+        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
         if (results2.length > 0) {
             
             if (results2[0]["peoplebeaten"].toString().includes("," + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().startsWith("[" + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().endsWith("," + results[0]["id"].toString() + "]") || results2[0]["peoplebeaten"] == "[" + results[0]["id"].toString() + "]") {
@@ -1781,7 +1781,20 @@ app.post("/completelevel.php", async (req, res) => {
                     if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ?,worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     if (results3["affectedRows"] > 0) {
-                        res.status(200).end()
+                        if (results2[0]["spotlight"] > 0) 
+                        {
+                            const [results4, fields4] = await connection.query("UPDATE bfdibranchesaccount SET points = ?, branchcoins = ? WHERE id = ?",[results[0]["points"] + results2[0]["difficulty"], results[0]["branchcoins"] + calculateBranchCoinsFromDifficulty(results2[0]["difficulty"]),results[0]["id"]])
+                            if (results4["affectedRows"] > 0) 
+                            {
+                                res.status(200).end()
+                            }
+                            else {
+                            res.status(500).end()
+                            }
+                        }
+                        else {
+                            res.status(200).end()
+                        }
                         if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
@@ -1797,7 +1810,20 @@ app.post("/completelevel.php", async (req, res) => {
                     const [resultt4, fields4] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     
                     if (results3["affectedRows"] > 0) {
-                        res.status(200).send("Level completed")
+                        if (results2[0]["spotlight"] > 0) 
+                        {
+                            const [results4, fields4] = await connection.query("UPDATE bfdibranchesaccount SET points = ?, branchcoins = ? WHERE id = ?",[results[0]["points"] + results2[0]["difficulty"], results[0]["branchcoins"] + calculateBranchCoinsFromDifficulty(results2[0]["difficulty"]),results[0]["id"]])
+                            if (results4["affectedRows"] > 0) 
+                            {
+                                res.status(200).end()
+                            }
+                            else {
+                            res.status(500).end()
+                            }
+                        }
+                        else {
+                            res.status(200).end()
+                        }
                         if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
@@ -1807,7 +1833,20 @@ app.post("/completelevel.php", async (req, res) => {
                     )
                 }
                 else {
-                    res.status(200).send("Level completed")
+                    if (results2[0]["spotlight"] > 0) 
+                        {
+                            const [results4, fields4] = await connection.query("UPDATE bfdibranchesaccount SET points = ?, branchcoins = ? WHERE id = ?",[results[0]["points"] + results2[0]["difficulty"], results[0]["branchcoins"] + calculateBranchCoinsFromDifficulty(results2[0]["difficulty"]),results[0]["id"]])
+                            if (results4["affectedRows"] > 0) 
+                            {
+                                res.status(200).end()
+                            }
+                            else {
+                            res.status(500).end()
+                            }
+                        }
+                        else {
+                            res.status(200).end()
+                        }
                     if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " completed \"" + results2[0]["title"] +"\" with " + req.body["time"] + " seconds.")
                          }
@@ -1837,6 +1876,30 @@ app.post("/completelevel.php", async (req, res) => {
     }
 
 }) 
+
+function calculateBranchCoinsFromDifficulty(difficulty)
+{
+    switch (difficulty) 
+    {
+        case 0:
+        return 5
+        case 1:
+        return 25
+        case 2:
+        return 50
+        case 3:
+        return 75
+        case 4:
+        return 100
+        case 5:
+        return 150
+        case 6:
+        return 250
+        default:
+        return 500
+    }
+
+}
 app.post("/getprofile.php", async (req, res) => {
     try {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
