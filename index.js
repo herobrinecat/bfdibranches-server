@@ -1756,7 +1756,7 @@ function parseJwt (token) {
             return result
         }
         else {
-            return "INVALID"
+            return " "
         }
         }
         else {
@@ -1765,7 +1765,7 @@ function parseJwt (token) {
         
     }
     catch (err) {
-        return "INVALID"
+        return " "
     }
 }
 
