@@ -28,7 +28,7 @@ const connection = await mysql.createConnection({
     // PUT YOUR OWN DATABASE IN AND I WOULD RECOMMEND PUTTING THE PASSWORD IN IT!!!
     host: 'localhost',
     user: 'root',
-    database: 'bfdibranches',
+    database: 'bfdibranches'
 });
 
 
