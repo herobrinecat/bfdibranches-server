@@ -295,6 +295,7 @@ catch (err) {
      res.status(500).end()
     }
 })
+
 app.post("/pfpshop.php", async (req, res) => {
      try {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -326,8 +327,9 @@ app.post("/pfpshop.php", async (req, res) => {
             res.status(206).send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
         }
         else if (req.body["mode"] == "buy") {
-            if (req.body["pfptype"] == 0) {
-            var shopitemsobject = JSON.parse(shopitems)
+            if (typeof req.body["pfptype"] == "number" && req.body["pfptype"] == 0) {
+                if (typeof req.body["pfpid"] == "number") {
+                                var shopitemsobject = JSON.parse(shopitems)
                 if (shopitemsobject["fg"][req.body["pfpid"]] != undefined) {
                     if (disableInventoryCheck == false && foregrounds1.includes("," + req.body["pfpid"] + ",") || foregrounds1.startsWith("[" + req.body["pfpid"]) || foregrounds1.endsWith("," + req.body["pfpid"] + "]")) {
                         res.status(400).send("Already Bought")
@@ -336,7 +338,7 @@ app.post("/pfpshop.php", async (req, res) => {
                         if (results[0]["branchcoins"] >= shopitemsobject["fg"][req.body["pfpid"]]) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, foregroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["fg"][req.body["pfpid"]]), foregrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
-            res.status(200).send("1234567890")
+            res.status(202).send("1234567890")
             if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (FG).")
             }
@@ -353,9 +355,14 @@ app.post("/pfpshop.php", async (req, res) => {
             else {
                 res.status(200).send("Price not found")
             }
+                }
+                else {
+                    res.status(400).end()
+                }
             }
-            else if (req.body["pfptype"] == 1) {
-            var shopitemsobject = JSON.parse(shopitems)
+            else if (typeof req.body["pfptype"] == "number" && req.body["pfptype"] == 1) {
+                if (typeof req.body["pfpid"] == "number") {
+                                var shopitemsobject = JSON.parse(shopitems)
                 if (shopitemsobject["bg"][req.body["pfpid"]] != undefined) {
                     if (disableInventoryCheck == false && backgrounds1.includes("," + req.body["pfpid"] + ",") || backgrounds1.startsWith("[" + req.body["pfpid"]) || backgrounds1.endsWith("," + req.body["pfpid"] + "]")) {
                         res.status(400).send("Already Bought")
@@ -364,7 +371,7 @@ app.post("/pfpshop.php", async (req, res) => {
                         if (results[0]["branchcoins"] >= shopitemsobject["bg"][req.body["pfpid"]]) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, backgroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["bg"][req.body["pfpid"]]), backgrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])   
                 if (results1["affectedRows"] > 0) {
-            res.status(200).send("1234567890")
+            res.status(202).send("1234567890")
             console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
         }
         else {
@@ -379,8 +386,20 @@ app.post("/pfpshop.php", async (req, res) => {
         } else {
             res.status(200).send("Price not found")
         }
+                }
+                else {
+                    res.status(400).end()
+                }
+
             }
+            else {
+            res.status(400).end()
         }
+        }
+        else {
+            res.status(400).end()
+        }
+ 
     }
     else {
      res.status(401).send("Invalid Info")
