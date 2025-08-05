@@ -429,14 +429,17 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
 
     if (results.length > 0) {
          if (results[0]["moderator"] == 0) {
-        res.status(403).send(403)
+        res.status(200).send("Not a Moderator")
     }    
     else if (results[0]["moderator"] == 1) {
         res.status(200).send(200)
     }
     else if (results[0]["moderator"] == 2) {
         res.status(201).send(201)
-    }    
+    }   
+    else {
+        res.status(403).send(403)
+    } 
     }
     else {
      res.status(401).send("Invalid Info")
