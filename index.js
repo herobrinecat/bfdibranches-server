@@ -106,7 +106,7 @@ app.post("/editpfp.php", async (req,res) => {
 
                 }
                 else {
-                    res.status(500).end()
+                    res.status(400).end()
                 }
                 }
                
@@ -132,7 +132,7 @@ app.post("/editpfp.php", async (req,res) => {
        
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 })
 app.post('/editprofile.php', async (req, res) => {
@@ -156,7 +156,7 @@ app.post('/editprofile.php', async (req, res) => {
         }
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 })
 app.get("/static/leaderboards/0.json", async (req, res) => {
@@ -173,6 +173,7 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
         results[i]["user_rank"] = (i + 1).toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
+        results[i]["date"] = results[i]["date"].replaceAll("Account Created: ", "")
         if (usernameColorBadgesExploitFix) {
         if (results[i]["usernameColor"].startsWith("Object(")) {
             results[i]["usernameColor"] = "[0,0]"
@@ -182,10 +183,10 @@ app.get("/static/leaderboards/0.json", async (req, res) => {
         }
     }
     }
-        res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
+        res.send(JSON.stringify(results).replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 })
 
@@ -203,6 +204,7 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
         results[i]["user_rank"] = (i + 1).toString()
         results[i]["frame"] = results[i]["frame"].toString()
         results[i]["branchcoins"] = results[i]["branchcoins"].toString()
+        results[i]["date"] = results[i]["date"].replaceAll("Account Created: ", "")
         if (usernameColorBadgesExploitFix) {
         if (results[i]["usernameColor"].startsWith("Object(")) {
             results[i]["usernameColor"] = "[0,0]"
@@ -212,10 +214,10 @@ app.post("/static/leaderboards/0.json", async (req, res) => {
         }
     }
     }
-        res.send(JSON.stringify(results).replaceAll("Account Created: ", "").replaceAll("\"id\":","\"userid\":"))
+        res.send(JSON.stringify(results).replaceAll("\"id\":","\"userid\":"))
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 })
 
@@ -252,7 +254,7 @@ app.post("/getpfpinventory.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -292,7 +294,7 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -344,7 +346,7 @@ app.post("/pfpshop.php", async (req, res) => {
             }
         }
         else {
-            res.status(500).end()
+            res.status(400).end()
         }
                 }
                 else {
@@ -375,7 +377,7 @@ app.post("/pfpshop.php", async (req, res) => {
             console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
         }
         else {
-            res.status(500).end()
+            res.status(400).end()
         }
             }
             else {
@@ -415,7 +417,7 @@ app.post("/pfpshop.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 app.post("/moderation/checkifmoderator.php", async (req, res) => {
@@ -455,7 +457,7 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -481,7 +483,7 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     }
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -510,7 +512,7 @@ app.post("/getlevel.php", async (req, res) => {
         }
     } catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 
 })
@@ -537,7 +539,7 @@ app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
     }
     } catch (err) {
     console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -1593,7 +1595,7 @@ app.post("/getlist.php", async (req, res) => {
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })  
 
@@ -1654,13 +1656,13 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
     }
         }
         else {
-            res.status(500).end()
+            res.status(400).end()
         }
         
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -1713,7 +1715,7 @@ else {
         }
     } catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
     
 })
@@ -1763,7 +1765,7 @@ app.post("/login.php", async (req, res) => {
         
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
     
 })
@@ -1839,7 +1841,7 @@ app.post("/completelevel.php", async (req, res) => {
                                 res.status(200).end()
                             }
                             else {
-                            res.status(500).end()
+                            res.status(400).end()
                             }
                         }
                         else {
@@ -1868,7 +1870,7 @@ app.post("/completelevel.php", async (req, res) => {
                                 res.status(200).end()
                             }
                             else {
-                            res.status(500).end()
+                            res.status(400).end()
                             }
                         }
                         else {
@@ -1891,7 +1893,7 @@ app.post("/completelevel.php", async (req, res) => {
                                 res.status(200).end()
                             }
                             else {
-                            res.status(500).end()
+                            res.status(400).end()
                             }
                         }
                         else {
@@ -1922,7 +1924,7 @@ app.post("/completelevel.php", async (req, res) => {
      
    } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 
 }) 
@@ -1981,7 +1983,7 @@ app.post("/getprofile.php", async (req, res) => {
       
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
-        res.status(500).end()
+        res.status(400).end()
     }
 
 })
@@ -2024,7 +2026,7 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2078,7 +2080,7 @@ app.post("/moderation/getreports.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2126,7 +2128,7 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2182,7 +2184,7 @@ if (results2.length > 0) {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2229,7 +2231,7 @@ app.post("/delete.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2276,7 +2278,7 @@ app.post("/changelevelinfo.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 })
 
@@ -2323,7 +2325,7 @@ app.post("/changeaccountinfo.php", async (req, res) => {
                 res.status(200).send("Changed Info\nYour User ID: " + results2[0]["id"])
             }
             else {
-                res.status(500).end()
+                res.status(400).end()
             }
         }
             }
@@ -2350,7 +2352,7 @@ app.post("/changeaccountinfo.php", async (req, res) => {
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(500).end()
+     res.status(400).end()
     }
 }) 
 
