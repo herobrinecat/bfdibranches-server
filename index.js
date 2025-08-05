@@ -266,16 +266,16 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
     );
     if (results.length > 0) {
         var coins = results[0]["branchcoins"]
-        const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, rewardavailable = 0 WHERE username = ? AND password = ?',[parseInt(coins) + 700,req.body["username"], password])
+        const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, rewardavailable = 0 WHERE username = ? AND password = ? AND rewardavailable = 1',[parseInt(coins) + 700,req.body["username"], password])
 
         if (results1["affectedRows"] > 0) {
-            res.send("1234567890")
+            res.status(202).send("1234567890")
             if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body["username"] + " opened their weekly reward.")
             }
         }
         else {
-            res.status(400).end()
+            res.status(200).end()
         }
     }
     else {
