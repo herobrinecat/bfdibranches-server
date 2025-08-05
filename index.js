@@ -1593,7 +1593,7 @@ app.post("/upload.php", async (req, res) => {
             res.status(403).send("You do not own this level")
         }
         else {
-const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours() + ":" + datet.getMinutes(),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
+const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
         if (results2["affectedRows"] > 0) {
             res.status(200).send("Published!")
             if (verbose) {
@@ -1612,7 +1612,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         }
         else {
             var datet = new Date(Date.now())
-        const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours() + ":" + datet.getMinutes(),results[0]["background"],results[0]["foreground"],version])
+        const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version])
         if (results1["affectedRows"] > 0) {
             res.status(200).send("Published!")
              if (verbose) {
@@ -1661,7 +1661,7 @@ if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && re
     }
     else {
         var datet = new Date(Date.now())
-        const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline) VALUES (?, ?, ?, ?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours() + ":" + datet.getMinutes(), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours() + ":" + datet.getMinutes()])
+        const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline) VALUES (?, ?, ?, ?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0")])
 
         if (results1["affectedRows"] > 0) {
               var token = jwt.sign({"password":req.body["password"]}, secret,{algorithm: 'HS256'})
@@ -2131,7 +2131,7 @@ if (results2.length > 0) {
     if (results3.length > 0) {
         var datet = new Date(Date.now())
          const [results4, fields4] =  await connection.query(
-        'INSERT INTO bfdibranchesreport (leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,description) VALUES (?,?,?,?,?,?,?)',[results2[0]["title"],req.body["levelid"],results2[0]["username"],results3[0]["id"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours() + ":" + datet.getMinutes(),req.body["description"]]
+        'INSERT INTO bfdibranchesreport (leveltitle,levelid,levelcreatorname,levelcreatorid,reportername,date,description) VALUES (?,?,?,?,?,?,?)',[results2[0]["title"],req.body["levelid"],results2[0]["username"],results3[0]["id"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),req.body["description"]]
     );
         if (results4["affectedRows"] > 0) {
             res.status(200).send("Level reported")
