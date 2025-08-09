@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken'
 
 //settings
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
+var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
 var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var()
 var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
@@ -19,6 +20,7 @@ var enableResetDailyAward = true //Enables resetting the daily award when a cert
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
 var shopitems = '{ "fg": { "69": 1000, "73": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "68": 1000, "67": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
 var version = "0.1.6.2"
@@ -70,9 +72,10 @@ app.post('/version.php', (req, res) => {
 app.post("/editpfp.php", async (req,res) => {
     //edit profile picture here
      try {
-
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) {
-             var password = parseJwt(req.body["password"])["password"]
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) {
+             var password = passresult["password"]
         
          var [results, fields] =  await connection.query(
         'SELECT foregroundsowned, backgroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
@@ -131,6 +134,8 @@ app.post("/editpfp.php", async (req,res) => {
         else {
             res.status(400).end()
         }
+        })
+        
        
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
@@ -139,7 +144,9 @@ app.post("/editpfp.php", async (req,res) => {
 })
 app.post('/editprofile.php', async (req, res) => {
       try {
-        var password = parseJwt(req.body["password"])["password"]
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            password = passresult["password"]
         
          const [results, fields] =  await connection.query(
         'UPDATE bfdibranchesaccount SET bio = ? WHERE username = ? AND password = ?',[req.body["bio"],req.body["username"], password]
@@ -156,6 +163,7 @@ app.post('/editprofile.php', async (req, res) => {
                 console.log("\x1b[34m", "<INFO> " + req.ip + " attempted to access with an invalid info.")
             }
         }
+        })
     } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
@@ -231,9 +239,11 @@ app.get("/static/pfpshopitems.json", (req, res) => {
 })
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+           if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+         password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT foreground, background, branchcoins, backgroundsowned, foregroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -251,8 +261,8 @@ app.post("/getpfpinventory.php", async (req, res) => {
         }
         else {
             res.status(400).end()
-        }
-        
+        }  
+        }) 
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -262,9 +272,11 @@ app.post("/getpfpinventory.php", async (req, res) => {
 
 app.post("/weeklyreward/reward.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+         password = passresult["password"]
         var [results, fields] =  await connection.query(
         'SELECT branchcoins,rewardavailable FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -292,6 +304,8 @@ app.post("/weeklyreward/reward.php", async (req, res) => {
         else {
             res.status(400).end()
         }
+        })
+        
         
 }
 catch (err) {
@@ -302,9 +316,11 @@ catch (err) {
 
 app.post("/pfpshop.php", async (req, res) => {
      try {
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            password = passresult["password"]
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-             var password = parseJwt(req.body["password"])["password"]
         var [results, fields] =  await connection.query(
         'SELECT branchcoins,foregroundsowned,backgroundsowned,rewardavailable FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -415,7 +431,7 @@ app.post("/pfpshop.php", async (req, res) => {
         else {
             res.status(400).end()
         }
-       
+        })       
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -424,9 +440,11 @@ app.post("/pfpshop.php", async (req, res) => {
 })
 app.post("/moderation/checkifmoderator.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+         password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -455,7 +473,7 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
         else {
             res.status(400).end()
         }
-        
+        })
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -547,10 +565,12 @@ app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
 
 app.post("/getlist.php", async (req, res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             if (req.headers["x-branches-version"] == version) {
-           var password = parseJwt(req.body["password"])["password"]
+           var password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1593,6 +1613,8 @@ app.post("/getlist.php", async (req, res) => {
         else {
             res.status(400).end()
         }
+        })
+        
      
 }
 catch (err) {
@@ -1604,9 +1626,11 @@ catch (err) {
 
 app.post("/upload.php", async (req, res) => {
       try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+            password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT id, background, foreground FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -1660,7 +1684,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         else {
             res.status(400).end()
         }
-        
+        })
 }
 catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -1690,7 +1714,13 @@ if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && re
         const [results1, field1] = await connection.query("INSERT INTO bfdibranchesaccount (username, password, date, lastonline) VALUES (?, ?, ?, ?)",[req.body["username"],req.body["password"],"Account Created: " + datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"), datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0")])
 
         if (results1["affectedRows"] > 0) {
-              var token = jwt.sign({"password":req.body["password"]}, secret,{algorithm: 'HS256'})
+        var token = ""
+        if (disableHashCheck) {
+            token = jwt.sign({"password":req.body["password"]}, secret,{algorithm: 'HS256'})
+        }
+        else {
+            token = jwt.sign({"username":req.body["username"], "jwtid":hash(req.body["password"])}, secret,{algorithm: 'HS256'})
+        }
         res.set({
             'X-Powered-By': 'Express',
             'Content-Type': 'text/html; charset=utf-8',
@@ -1731,7 +1761,13 @@ app.post("/login.php", async (req, res) => {
         'SELECT id, username, password FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], req.body["password"]]
     );
     if (JSON.stringify(results) != "[]") {
-        var token = jwt.sign({"password":req.body["password"]}, secret,{algorithm: 'HS256'})
+        var token = ""
+        if (disableHashCheck) {
+            token = jwt.sign({"password":req.body["password"]}, secret,{algorithm: 'HS256'})
+        }
+        else {
+            token = jwt.sign({"username":req.body["username"], "jwtid":hash(req.body["password"])}, secret,{algorithm: 'HS256'})
+        }
         res.set({
             'X-Powered-By': 'Express',
             'Content-Type': 'text/html; charset=utf-8',
@@ -1771,7 +1807,7 @@ app.post("/login.php", async (req, res) => {
     }
     
 })
-function parseJwt (token) {
+async function parseJwt (token) {
     try {
         var result = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
 
@@ -1779,14 +1815,56 @@ function parseJwt (token) {
         var checktoken = jwt.sign(result, secret, { algorithm: "HS256" })
 
         if (checktoken == token) {
-            return result
+            if (disableHashCheck) {
+                return result
+            }
+            else {
+                 const [results, fields] =  await connection.query(
+        'SELECT password FROM bfdibranchesaccount WHERE username = ?',[result["username"]]
+    );
+
+    if (results.length > 0) {
+        var hash1 = hash(results[0]["password"])
+        
+        if (hash1 == result["jwtid"]) {
+            return JSON.parse("{\"password\": \"" + results[0]["password"] + "\"}")
+        } 
+        else {
+            return " "
+        }
+    }
+    else {
+        
+        return " "
+    }
+            }
         }
         else {
             return " "
         }
         }
         else {
-            return result
+            if (disableHashCheck) {
+                return result
+            }
+            else {
+                 const [results, fields] =  await connection.query(
+        'SELECT password FROM bfdibranchesaccount WHERE username = ?',[result["username"]]
+    );
+
+    if (results.length > 0) {
+        var hash1 = hash(results[0]["password"])
+        if (hash1 == result["jwtid"]) {
+            return { "password": results[0]["password"] }
+        } 
+        else {
+            return " "
+        }
+    }
+    else {
+        return " "
+    }
+            }
         }
         
     }
@@ -1798,11 +1876,13 @@ function parseJwt (token) {
 app.post("/completelevel.php", async (req, res) => {
    try {
     // don't cheat!!!
-    if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+    var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
             let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
-        var password = parseJwt(req.body["password"])["password"]
+    password = passresult["password"]
     const [results, fields] = await connection.query("SELECT id, branchcoins, points FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
         const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
@@ -1923,6 +2003,8 @@ app.post("/completelevel.php", async (req, res) => {
         else {
             res.status(400).end()
         }
+        })
+    
      
    } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
@@ -1992,9 +2074,11 @@ app.post("/getprofile.php", async (req, res) => {
 
 app.post("/moderation/getlevelinfo.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+              if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-             var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2024,7 +2108,7 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
         else {
             res.status(400).end()
         }
-       
+        }) 
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2034,9 +2118,11 @@ app.post("/moderation/getlevelinfo.php",async (req,res) => {
 
 app.post("/moderation/getreports.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-             var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2078,7 +2164,7 @@ app.post("/moderation/getreports.php",async (req,res) => {
         else {
             res.status(400).end()
         }
-       
+        })
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2088,9 +2174,11 @@ app.post("/moderation/getreports.php",async (req,res) => {
 
 app.post("/moderation/changelevelinfo.php",async (req,res) => {
     try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+          if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT moderator FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2125,8 +2213,8 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
         }
         else {
             res.status(400).end()
-        }
-        
+        }  
+        })
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2136,9 +2224,11 @@ app.post("/moderation/changelevelinfo.php",async (req,res) => {
 
 app.post("/reportlevel.php", async (req, res) => {
         try {
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
             if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-             var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2182,6 +2272,8 @@ if (results2.length > 0) {
         else {
             res.status(400).end()
         }
+        })
+        
        
     }
      catch (err) {
@@ -2192,9 +2284,11 @@ if (results2.length > 0) {
 
 app.post("/delete.php", async (req, res) => {
      try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-            var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2229,7 +2323,7 @@ app.post("/delete.php", async (req, res) => {
         else {
             res.status(400).end()
         }
-        
+        })
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2239,9 +2333,11 @@ app.post("/delete.php", async (req, res) => {
 
 app.post("/changelevelinfo.php", async (req, res) => {
       try {
-        if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
+        var password = parseJwt(req.body["password"])
+        password.then(async function(passresult) {
+            if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-               var password = parseJwt(req.body["password"])["password"]
+        password = passresult["password"]
         const [results, fields] =  await connection.query(
         'SELECT id FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
@@ -2276,7 +2372,7 @@ app.post("/changelevelinfo.php", async (req, res) => {
         else {
             res.status(400).end()
         }
-     
+        })
     }
      catch (err) {
      console.log("\x1b[31m", "<ERROR> " + err)
@@ -2367,8 +2463,16 @@ app.use((req, res, next)=>{
   console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\" (" + req.method + ")")
 });
 
+function hash(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) {
+        h = 31 * h + s.charCodeAt(i);
+    }
+    return h;
+}
+
 async function resetAward() {
-            var datet = new Date(Date.now())
+        var datet = new Date(Date.now())
     if (datet.toLocaleString('en-us', {  weekday: 'long' }) == "Friday") {
         const [results1, fields1] = await connection.query("UPDATE bfdibranchesaccount SET rewardavailable = 1")
         if (results1["affectedRows"] > 0)
@@ -2386,13 +2490,15 @@ async function resetAward() {
     await delay(8.64e+7)
     resetAward()
 }
-
 app.listen(port, () => {
     if (verbose) {
         console.log("\x1b[34m", "<INFO> Server started up on port " + port)
     }
     if (disableSignatureCheck == true) {
     console.warn("\x1b[33m","<WARN> Disabling the password signature check can cause the server to be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+}
+if (disableHashCheck == true) {
+    console.warn("\x1b[33m","<WARN> Disabling the hashing check and method for password is not recommended as hackers can obtain your password via methods! We would strongly recommend enabling this for extra protection!")
 }
     if (enableResetDailyAward) {
         resetAward()
