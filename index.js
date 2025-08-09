@@ -16,13 +16,14 @@ var trolladminurl = true //Trolls people by rickrolling when someone tries to go
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 var disableInventoryCheck = false //Disable the inventory check when purchasing PFPs
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
+
 //variables
 const app = express()
 var shopitems = '{ "fg": { "69": 1000, "73": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "68": 1000, "67": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
 var version = "0.1.6.2"
 var port = 3000
 
-app.use(express.json())
+app.use(express.json({ limit: '8mb' }))
 
 const connection = await mysql.createConnection({
     // PUT YOUR OWN DATABASE IN AND I WOULD RECOMMEND PUTTING THE PASSWORD IN IT!!!
@@ -580,11 +581,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -642,11 +643,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -707,11 +708,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -769,11 +770,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -834,11 +835,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -896,11 +897,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -961,11 +962,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1023,11 +1024,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1090,11 +1091,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1152,11 +1153,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1217,11 +1218,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1279,11 +1280,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1344,11 +1345,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1406,11 +1407,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1471,11 +1472,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
@@ -1533,11 +1534,11 @@ app.post("/getlist.php", async (req, res) => {
                             peoplebeatenarray = results1[i]["peoplebeaten"].split(",")
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
-                            if (peoplebeatenarray.length > 1) {
+                            if (peoplebeatenarray.length > 0) {
                                  results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
-                                results1[i]["date"] =  peoplebeatenarray.length + " Completion\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             results1[i]["icon"] =  results1[i]["icon"].toString()
                             results1[i]["spotlight"] =  results1[i]["spotlight"].toString()
