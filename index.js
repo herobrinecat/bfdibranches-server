@@ -15,6 +15,7 @@ var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 var disableInventoryCheck = false //Disable the inventory check when purchasing PFPs
+var enableResetDailyAward = true //Enables resetting the daily award when a certain day hits every 24 hours
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
@@ -2366,14 +2367,34 @@ app.use((req, res, next)=>{
   console.log("\x1b[33m", "<WARN> NOT IMPLEMENTED: \"" + req.protocol + "://" + req.get("host") + req.originalUrl + "\" (" + req.method + ")")
 });
 
-
-
-if (disableSignatureCheck == true) {
-    console.warn("\x1b[33m","<WARN> Disabling the password signature check can cause the server to be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+async function resetAward() {
+            var datet = new Date(Date.now())
+    if (datet.toLocaleString('en-us', {  weekday: 'long' }) == "Friday") {
+        const [results1, fields1] = await connection.query("UPDATE bfdibranchesaccount SET rewardavailable = 1")
+        if (results1["affectedRows"] > 0)
+        {
+        if (verbose) {
+        console.log("\x1b[34m", "<INFO> Reseted every user's daily award envelope")
+        }
+        }
+        else {
+            if (verbose) {
+        console.log("\x1b[31m", "<ERROR> Something went wrong while attempting to reset every user's daily award envelope!")
+        }
+        }
+    }
+    await delay(8.64e+7)
+    resetAward()
 }
 
 app.listen(port, () => {
     if (verbose) {
         console.log("\x1b[34m", "<INFO> Server started up on port " + port)
+    }
+    if (disableSignatureCheck == true) {
+    console.warn("\x1b[33m","<WARN> Disabling the password signature check can cause the server to be less secure and more prone to hackers from outside the game! We would strongly recommend enabling this for extra protection!")
+}
+    if (enableResetDailyAward) {
+        resetAward()
     }
 })

@@ -8,7 +8,7 @@ This is what we have implemented so far:
 
 * Creating and signing in user
 * Profile editing (PFP, Bio)
-* Gelatin's Shop (the envelope doesn't reset, so you gotta edit the database)
+* Gelatin's Shop
 * Leaderboard
 * Levels (partially)
 * version.php (needed to let the game check for updates)
