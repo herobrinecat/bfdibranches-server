@@ -392,7 +392,9 @@ app.post("/pfpshop.php", async (req, res) => {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, backgroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["bg"][req.body["pfpid"]]), backgrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])   
                 if (results1["affectedRows"] > 0) {
             res.status(202).send("1234567890")
-            console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
+            }
         }
         else {
             res.status(400).end()
