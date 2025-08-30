@@ -7,7 +7,7 @@
 import express from 'express'
 import mysql from 'mysql2/promise'
 import jwt from 'jsonwebtoken'
-
+import http from 'https'
 //settings
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
@@ -17,6 +17,10 @@ var trolladminurl = true //Trolls people by rickrolling when someone tries to go
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 var disableInventoryCheck = false //Disable the inventory check when purchasing PFPs
 var enableResetDailyAward = true //Enables resetting the daily award when a certain day hits every 24 hours
+var serverSync = {
+    "version": false,
+    "shopItems": false
+} //Makes the version and shopitems string match the official server by contacting the server
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
@@ -2760,5 +2764,59 @@ if (disableHashCheck == true) {
 }
     if (enableResetDailyAward) {
         resetAward()
+    }
+    if (serverSync["version"] == true) {
+        try {
+            const options = {
+                hostname: "branchesbfdi.nfshost.com",
+                path: "/version.php",
+                headers: {
+                    'User-Agent': 'totallychrome'
+                }
+            }
+
+            http.get(options, (response) => {
+                let data = ''
+
+                response.on('data', (chunk) => {
+                    data += chunk.toString()
+                })
+
+                response.on('end', () => {
+                    version = data
+                    console.log("\x1b[34m", "<INFO> Version string synced with official server")
+                })
+            })
+        }
+        catch (err) {
+            console.log("\x1b[31m", "<ERROR> " + err)
+        }
+    }
+    if (serverSync["shopItems"] == true) {
+        try {
+            const options = {
+                hostname: "branchesbfdi.nfshost.com",
+                path: "/static/pfpshopitems.json",
+                headers: {
+                    'User-Agent': 'totallychrome'
+                }
+            }
+
+            http.get(options, (response) => {
+                let data = ''
+
+                response.on('data', (chunk) => {
+                    data += chunk.toString()
+                })
+
+                response.on('end', () => {
+                    shopitems = data
+                    console.log("\x1b[34m", "<INFO> Shop items synced with official server")
+                })
+            })
+        }
+        catch (err) {
+            console.log("\x1b[31m", "<ERROR> " + err)
+        }
     }
 })
