@@ -1,6 +1,6 @@
 # BFDI: Branches Custom Server
 
-This is a repository where the BFDI: Branches Custom Server is avaliable at and is open-source, letting you know how the server is like, even though it isn't the same.
+This is a repository where the BFDI: Branches Custom Server is avaliable at and is open-source, letting you know how the server is like, even though it isn't the same. (I'm aware some functions may broke after 2.0, but this project is not really in my priority, so expect it to come out in few months)
 
 ## What's implemented
 
