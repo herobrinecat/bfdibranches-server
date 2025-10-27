@@ -60,7 +60,7 @@ Once you're done fixing the project, open up the project, go to global.gd, and c
 
 You can save the project and compile it for Windows and other platforms too.
 
-(If the decompiler complains about encryption key, then you're most likely trying to decompile for version below 0.1.4, the solution is to update or use the hex editor method)
+(If the decompiler complains about encryption key, then you're most likely trying to decompile for version below 0.1.4 or above 2.0, the solution is to update or use the hex editor method [you can ignore this if you have a encryption key])
 
 **(The URL text you see after you changed the server to the custom server on the top-right is normal and is expected)**
 
