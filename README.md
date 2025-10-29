@@ -2,6 +2,7 @@
 
 This is a repository where the BFDI: Branches Custom Server is avaliable at and is open-source, letting you know how the server is like, even though it isn't the same. (I'm aware some functions have broke after 2.0, but this project is not really in my priority, so expect it to come out in few months)
 
+(This is a branch where 2.0/3.0 support is being made, when this is good enough, it will be pushed to master)
 ## What's implemented
 
 This is what we have implemented so far:
