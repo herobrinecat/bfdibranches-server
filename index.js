@@ -2768,7 +2768,7 @@ if (disableHashCheck == true) {
     if (serverSync["version"] == true) {
         try {
             const options = {
-                hostname: "branchesbfdi.nfshost.com",
+                hostname: "api.bfdibranches.com",
                 path: "/version.php",
                 headers: {
                     'User-Agent': 'totallychrome'
@@ -2795,7 +2795,7 @@ if (disableHashCheck == true) {
     if (serverSync["shopItems"] == true) {
         try {
             const options = {
-                hostname: "branchesbfdi.nfshost.com",
+                hostname: "api.bfdibranches.com",
                 path: "/static/pfpshopitems.json",
                 headers: {
                     'User-Agent': 'totallychrome'
