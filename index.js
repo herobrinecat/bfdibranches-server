@@ -12,7 +12,7 @@ import http from 'https'
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
 var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
-var verbose = false //Logs more info
+var verbose = true //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 var disableInventoryCheck = false //Disable the inventory check when purchasing PFPs
@@ -598,7 +598,8 @@ app.post("/getlist.php", async (req, res) => {
      return
     }
     }
-       if (req.body["searchtype"] == "level") {
+      if (req.body["type"] != "story") {
+         if (req.body["searchtype"] == "level") {
         if (req.body["searchtitle"] != "") {
            if (req.body["searchtype2"] == "title") {
               if (req.body["type"] == "spotlight") {
@@ -1874,6 +1875,10 @@ app.post("/getlist.php", async (req, res) => {
             }
         }  
     }
+      }
+      else {
+        res.status(204).end()
+      }
 
      }
      else {
@@ -2145,7 +2150,7 @@ async function parseJwt (token) {
 
 app.post("/completelevel.php", async (req, res) => {
    try {
-    // don't cheat!!!
+    // don't cheat!!! (otherwise you may get banned if you abuse their api, especially clearing D10 and D9 levels, but here, you can't get banned)
     var password = parseJwt(req.body["password"])
         password.then(async function(passresult) {
             if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -2153,11 +2158,24 @@ app.post("/completelevel.php", async (req, res) => {
             let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
     password = passresult["password"]
-    const [results, fields] = await connection.query("SELECT id, branchcoins, points FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
+    const [results, fields] = await connection.query("SELECT id, branchcoins, points,backgroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
         const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
         if (results2.length > 0) {
-            
+            if (disableInventoryCheck == false && results[0]["backgroundsowned"].includes(",86,") || results[0]["backgroundsowned"].startsWith("[86") || results[0]["backgroundsowned"].endsWith(",86]")) {
+                //do nothing, also branches programmers, if you see this, say hi!
+                
+            }
+            else {
+                if (req.body["multiplayer"] > 0) {
+                    const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET backgroundsowned = ? WHERE username = ? AND password = ?',[results[0]["backgroundsowned"].replace("]", "") + ",86]",req.body["username"], password])
+                if (results1["affectedRows"] > 0) {
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " got the mulitplayer achievement!")
+            }
+        }
+                }
+            }
             if (results2[0]["peoplebeaten"].toString().includes("," + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().startsWith("[" + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().endsWith("," + results[0]["id"].toString() + "]") || results2[0]["peoplebeaten"] == "[" + results[0]["id"].toString() + "]") {
                 if (parseFloat(req.body["time"]) < parseFloat(results2[0]["worldrecordtime"])) {
                     if (req.body["time"].toString().endsWith(.00)) { req.body["time"] = req.body["time"].slice(0,-3) }
