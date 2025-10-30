@@ -2167,7 +2167,7 @@ app.post("/completelevel.php", async (req, res) => {
                 
             }
             else {
-                if (req.body["multiplayer"] > 0) {
+                if (req.body["multiplayer"] != undefined && req.body["multiplayer"] > 0) {
                     const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET backgroundsowned = ? WHERE username = ? AND password = ?',[results[0]["backgroundsowned"].replace("]", "") + ",86]",req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
             if (verbose) {
