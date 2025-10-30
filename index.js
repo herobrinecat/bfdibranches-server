@@ -11,8 +11,8 @@ import http from 'https'
 //settings
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
-var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
-var verbose = false //Logs more info
+var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
+var verbose = true //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
 var disableInventoryCheck = false //Disable the inventory check when purchasing PFPs
@@ -26,8 +26,9 @@ var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking
 //variables
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
-var shopitems = '{ "fg": { "69": 1000, "73": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "68": 1000, "67": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
-var version = "0.1.6.2"
+var shopitems = '{ "fg": { "91": 1000, "98": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
+var YFshopitems = '{ "fg": { "58": 500, "92": 500, "93": 500, "94": 500, "95": 500, "97": 500, "106": 500, "107": 500, "108": 500, "109": 500, "110": 500, "99": 500, "100": 500, "48": 1500, "49": 1500, "52": 1500, "54": 1500, "50": 1500, "47": 1500, "56": 1500, "55": 1500, "51": 1500, "53": 1500, "60": 4000, "96": 4000, "101": 7000 }, "bg": { "51": 500, "53": 500, "52": 1000, "59": 1000, "60": 1000, "61": 1000, "62": 1000, "63": 1000, "75": 1000, "77": 1000, "78": 1000, "79": 1000, "80": 1000, "81": 1000, "83": 1000, "84": 1000, "85": 1000, "87": 1000, "90": 1000, "54": 1500, "55": 1500, "56": 1500, "57": 1500, "58": 1500, "82": 1500, "88": 1500, "89": 1500, "76": 1500 } } '
+var version = "0.3"
 var port = 3000
 
 app.use(express.json({ limit: '8mb' }))
@@ -241,6 +242,12 @@ app.post("/static/pfpshopitems.json", (req, res) => {
 app.get("/static/pfpshopitems.json", (req, res) => {
     res.send(shopitems)
 })
+app.get("/static/pfpshopitems.php", (req, res) => {
+    res.send(shopitems)
+})
+app.get("/static/pfpshopitemsYF.php", (req, res) => {
+    res.send(YFshopitems)
+})
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
         var password = parseJwt(req.body["password"])
@@ -341,12 +348,13 @@ app.post("/pfpshop.php", async (req, res) => {
             }
             for (var i = 0; i < results[0]["backgroundsowned"].split(',').length; i++) {
                 var backgrounds = results[0]["backgroundsowned"].slice(0,-1).slice(1).split(',')
-                    if (i == backgrounds.length - 1) {
+                //(i == backgrounds.length - 1) ? result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" : result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
+                  if (i == backgrounds.length - 1) {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" 
                     }   
                     else {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
-                    }     
+                    }   
             }
             res.status(206).send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
         }
@@ -590,7 +598,8 @@ app.post("/getlist.php", async (req, res) => {
      return
     }
     }
-       if (req.body["searchtype"] == "level") {
+      if (req.body["type"] != "story") {
+         if (req.body["searchtype"] == "level") {
         if (req.body["searchtitle"] != "") {
            if (req.body["searchtype2"] == "title") {
               if (req.body["type"] == "spotlight") {
@@ -1866,6 +1875,10 @@ app.post("/getlist.php", async (req, res) => {
             }
         }  
     }
+      }
+      else {
+        res.status(204).end()
+      }
 
      }
      else {
@@ -2137,7 +2150,7 @@ async function parseJwt (token) {
 
 app.post("/completelevel.php", async (req, res) => {
    try {
-    // don't cheat!!!
+    // don't cheat!!! (otherwise you may get banned if you abuse their api, especially clearing D10 and D9 levels, but here, you can't get banned)
     var password = parseJwt(req.body["password"])
         password.then(async function(passresult) {
             if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -2145,11 +2158,24 @@ app.post("/completelevel.php", async (req, res) => {
             let isnum = /^\d+$/.test(req.body["levelid"])
      if (isnum) {
     password = passresult["password"]
-    const [results, fields] = await connection.query("SELECT id, branchcoins, points FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
+    const [results, fields] = await connection.query("SELECT id, branchcoins, points,backgroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
         const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
         if (results2.length > 0) {
-            
+            if (disableInventoryCheck == false && results[0]["backgroundsowned"].includes(",86,") || results[0]["backgroundsowned"].startsWith("[86") || results[0]["backgroundsowned"].endsWith(",86]")) {
+                //do nothing, also branches programmers, if you see this, say hi!
+                
+            }
+            else {
+                if (req.body["multiplayer"] != undefined && req.body["multiplayer"] > 0) {
+                    const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET backgroundsowned = ? WHERE username = ? AND password = ?',[results[0]["backgroundsowned"].replace("]", "") + ",86]",req.body["username"], password])
+                if (results1["affectedRows"] > 0) {
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " got the mulitplayer achievement!")
+            }
+        }
+                }
+            }
             if (results2[0]["peoplebeaten"].toString().includes("," + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().startsWith("[" + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().endsWith("," + results[0]["id"].toString() + "]") || results2[0]["peoplebeaten"] == "[" + results[0]["id"].toString() + "]") {
                 if (parseFloat(req.body["time"]) < parseFloat(results2[0]["worldrecordtime"])) {
                     if (req.body["time"].toString().endsWith(.00)) { req.body["time"] = req.body["time"].slice(0,-3) }
@@ -2303,7 +2329,7 @@ app.post("/getprofile.php", async (req, res) => {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
               const [results, fields] =  await connection.query(
-        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
+        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,points FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
     );
 
    if (results.length == 0) 
@@ -2768,7 +2794,7 @@ if (disableHashCheck == true) {
     if (serverSync["version"] == true) {
         try {
             const options = {
-                hostname: "branchesbfdi.nfshost.com",
+                hostname: "api.bfdibranches.com",
                 path: "/version.php",
                 headers: {
                     'User-Agent': 'totallychrome'
@@ -2795,8 +2821,8 @@ if (disableHashCheck == true) {
     if (serverSync["shopItems"] == true) {
         try {
             const options = {
-                hostname: "branchesbfdi.nfshost.com",
-                path: "/static/pfpshopitems.json",
+                hostname: "api.bfdibranches.com",
+                path: "/static/pfpshopitems.php",
                 headers: {
                     'User-Agent': 'totallychrome'
                 }
@@ -2811,7 +2837,26 @@ if (disableHashCheck == true) {
 
                 response.on('end', () => {
                     shopitems = data
+                    const options1 = {
+                hostname: "api.bfdibranches.com",
+                path: "/static/pfpshopitemsYF.php",
+                headers: {
+                    'User-Agent': 'totallychrome'
+                }
+            }
+
+            http.get(options, (response) => {
+                let data = ''
+
+                response.on('data', (chunk) => {
+                    data += chunk.toString()
+                })
+
+                response.on('end', () => {
+                    YFshopitems = data
                     console.log("\x1b[34m", "<INFO> Shop items synced with official server")
+                })
+            })
                 })
             })
         }
