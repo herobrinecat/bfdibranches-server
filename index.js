@@ -26,7 +26,8 @@ var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking
 //variables
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
-var shopitems = '{ "fg": { "69": 1000, "73": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "68": 1000, "67": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
+var shopitems = '{ "fg": { "91": 1000, "98": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
+var YFshopitems = '{ "fg": { "58": 500, "92": 500, "93": 500, "94": 500, "95": 500, "97": 500, "106": 500, "107": 500, "108": 500, "109": 500, "110": 500, "99": 500, "100": 500, "48": 1500, "49": 1500, "52": 1500, "54": 1500, "50": 1500, "47": 1500, "56": 1500, "55": 1500, "51": 1500, "53": 1500, "60": 4000, "96": 4000, "101": 7000 }, "bg": { "51": 500, "53": 500, "52": 1000, "59": 1000, "60": 1000, "61": 1000, "62": 1000, "63": 1000, "75": 1000, "77": 1000, "78": 1000, "79": 1000, "80": 1000, "81": 1000, "83": 1000, "84": 1000, "85": 1000, "87": 1000, "90": 1000, "54": 1500, "55": 1500, "56": 1500, "57": 1500, "58": 1500, "82": 1500, "88": 1500, "89": 1500, "76": 1500 } } '
 var version = "0.3"
 var port = 3000
 
@@ -241,6 +242,12 @@ app.post("/static/pfpshopitems.json", (req, res) => {
 app.get("/static/pfpshopitems.json", (req, res) => {
     res.send(shopitems)
 })
+app.get("/static/pfpshopitems.php", (req, res) => {
+    res.send(shopitems)
+})
+app.get("/static/pfpshopitemsYF.php", (req, res) => {
+    res.send(YFshopitems)
+})
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
         var password = parseJwt(req.body["password"])
@@ -341,12 +348,13 @@ app.post("/pfpshop.php", async (req, res) => {
             }
             for (var i = 0; i < results[0]["backgroundsowned"].split(',').length; i++) {
                 var backgrounds = results[0]["backgroundsowned"].slice(0,-1).slice(1).split(',')
-                    if (i == backgrounds.length - 1) {
+                //(i == backgrounds.length - 1) ? result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" : result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
+                  if (i == backgrounds.length - 1) {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" 
                     }   
                     else {
                         result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
-                    }     
+                    }   
             }
             res.status(206).send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
         }
@@ -2303,7 +2311,7 @@ app.post("/getprofile.php", async (req, res) => {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
               const [results, fields] =  await connection.query(
-        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
+        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,points FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
     );
 
    if (results.length == 0) 
@@ -2796,7 +2804,7 @@ if (disableHashCheck == true) {
         try {
             const options = {
                 hostname: "api.bfdibranches.com",
-                path: "/static/pfpshopitems.json",
+                path: "/static/pfpshopitems.php",
                 headers: {
                     'User-Agent': 'totallychrome'
                 }
@@ -2811,7 +2819,26 @@ if (disableHashCheck == true) {
 
                 response.on('end', () => {
                     shopitems = data
+                    const options1 = {
+                hostname: "api.bfdibranches.com",
+                path: "/static/pfpshopitemsYF.php",
+                headers: {
+                    'User-Agent': 'totallychrome'
+                }
+            }
+
+            http.get(options, (response) => {
+                let data = ''
+
+                response.on('data', (chunk) => {
+                    data += chunk.toString()
+                })
+
+                response.on('end', () => {
+                    YFshopitems = data
                     console.log("\x1b[34m", "<INFO> Shop items synced with official server")
+                })
+            })
                 })
             })
         }
