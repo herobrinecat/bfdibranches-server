@@ -1920,7 +1920,12 @@ app.post("/upload.php", async (req, res) => {
         else {
 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
         if (results2["affectedRows"] > 0) {
-            res.status(200).send("Published!")
+            if (Number.parseFloat(version.slice(2)) > 0.1) {
+                res.status(200).send("Published new level!")
+            }
+            else {
+                res.status(200).send("Published!")
+            }
             if (verbose) {
                 console.log("\x1b[34m", "<INFO> " + req.body['username'] + " replaced level id of " + req.body["replaceid"] + " with level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
                
@@ -1939,7 +1944,12 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
             var datet = new Date(Date.now())
         const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version])
         if (results1["affectedRows"] > 0) {
-            res.status(200).send("Published!")
+            if (Number.parseFloat(version.slice(2)) > 0.1) {
+                res.status(200).send("Published new level!")
+            }
+            else {
+                res.status(200).send("Published!")
+            }
              if (verbose) {
                  console.log("\x1b[34m", "<INFO> " + req.body['username'] + " published the level \"" + req.body["title"] + "\" with the time of " + req.body["creatortime"] + " seconds.")
             }
