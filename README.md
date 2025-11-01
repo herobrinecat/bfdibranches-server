@@ -7,7 +7,7 @@ This is what we have implemented so far:
 
 * Creating and signing in user
 * Profile editing (PFP, Bio)
-* Gelatin's Shop
+* Gelatin's Shop (Yellow Face's Shop is the same here, 2.0+)
 * Leaderboard
 * Levels (partially)
 * version.php (needed to let the game check for updates)
