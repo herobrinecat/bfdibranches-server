@@ -32,7 +32,7 @@ If you want to share your custom server to the public, then port forwarding is r
 
 ## Patching the game for custom server
 
-BFDI: Branches usually have the server set to "branchesbfdi.nfshost.com", however you can change it either by hex editor or decompiling the game and editing it.
+BFDI: Branches usually have the server set to "branchesbfdi.nfshost.com" for versions under 2.0, otherwise it would be "api.bfdibranches.com", however you can change it either by hex editor or decompiling the game and editing it.
 
 (**Make sure to always sign out after switching servers as the way of storing your info is not the same!**)
 ### Hex Editor
@@ -41,7 +41,9 @@ BFDI: Branches usually have the server set to "branchesbfdi.nfshost.com", howeve
 First, open up your favorite hex editor, for example, we will be using HxD.
 
 With HxD, open up bfdibranches.pck, go to search and press on Find (or Ctrl+F) and type in this value you want to find:
-`"https://branchesbfdi.nfshost.com"`
+`"https://branchesbfdi.nfshost.com"` (<2.0)
+`"https://api.bfdibranches.com"` (2.0+)
+
 (Make sure to find it as a Text-String)
 
 Make sure that your url is not longer than the length of the original, if it's shorter, you can just fill the rest of empty space with 0A (in hex, not text.)
