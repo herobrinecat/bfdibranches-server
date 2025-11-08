@@ -245,9 +245,47 @@ app.get("/static/pfpshopitems.json", (req, res) => {
 app.get("/static/pfpshopitems.php", (req, res) => {
     res.send(shopitems)
 })
-app.get("/static/pfpshopitemsYF.php", (req, res) => {
-    res.send(YFshopitems)
+
+app.post("/static/pfpshopitems.php", (req, res) => {
+    res.send(shopitems)
 })
+
+app.get("/static/pfpshopitemsYF.php", (req, res) => {
+    if (parseFloat(version.slice(0,3)) > 0.1) {
+        res.send(YFshopitems)
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
+app.post("/static/pfpshopitemsYF.php", (req, res) => {
+    if (parseFloat(version.slice(0,3)) > 0.1) {
+        res.send(YFshopitems)
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
+app.get("/static/pfpshopitemsYF.json", (req, res) => {
+    if (parseFloat(version.slice(0,3)) > 0.1) {
+        res.send(YFshopitems)
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
+app.post("/static/pfpshopitemsYF.json", (req, res) => {
+    if (parseFloat(version.slice(0,3)) > 0.1) {
+        res.send(YFshopitems)
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
 app.post("/getpfpinventory.php", async (req, res) => {
     try {
         var password = parseJwt(req.body["password"])
