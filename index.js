@@ -28,7 +28,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
 var shopitems = '{ "fg": { "91": 1000, "98": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
 var YFshopitems = '{ "fg": { "58": 500, "92": 500, "93": 500, "94": 500, "95": 500, "97": 500, "106": 500, "107": 500, "108": 500, "109": 500, "110": 500, "99": 500, "100": 500, "48": 1500, "49": 1500, "52": 1500, "54": 1500, "50": 1500, "47": 1500, "56": 1500, "55": 1500, "51": 1500, "53": 1500, "60": 4000, "96": 4000, "101": 7000 }, "bg": { "51": 500, "53": 500, "52": 1000, "59": 1000, "60": 1000, "61": 1000, "62": 1000, "63": 1000, "75": 1000, "77": 1000, "78": 1000, "79": 1000, "80": 1000, "81": 1000, "83": 1000, "84": 1000, "85": 1000, "87": 1000, "90": 1000, "54": 1500, "55": 1500, "56": 1500, "57": 1500, "58": 1500, "82": 1500, "88": 1500, "89": 1500, "76": 1500 } } '
-var version = "0.3"
+var version = "0.3" //A version the server reports using (If the client sees that it doesn't match this version, it will prompt you to update)
 var port = 3000
 
 app.use(express.json({ limit: '8mb' }))
@@ -61,7 +61,7 @@ if (trolladminurl == true) {
 }
 
 app.get('/favicon.ico', (req,res) => {
-    res.status(404).send({message:"Not Found"});
+    res.status(404).end();
 })
 
 app.get('/version.php', (req, res) => {
@@ -349,12 +349,7 @@ app.post("/pfpshop.php", async (req, res) => {
             for (var i = 0; i < results[0]["backgroundsowned"].split(',').length; i++) {
                 var backgrounds = results[0]["backgroundsowned"].slice(0,-1).slice(1).split(',')
                 //(i == backgrounds.length - 1) ? result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" : result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
-                  if (i == backgrounds.length - 1) {
-                        result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}" 
-                    }   
-                    else {
-                        result = result + '{"type":1,"pfpid":' + backgrounds[i] + "}," 
-                    }   
+                result = result + '{"type":1,"pfpid":' + backgrounds[i] + ((i == backgrounds.length - 1) ? "}" : "},")
             }
             res.status(206).send("[" + results[0]["branchcoins"] + "," + results[0]["rewardavailable"] + ",[" + result + "]]")
         }
@@ -362,6 +357,7 @@ app.post("/pfpshop.php", async (req, res) => {
             if (typeof req.body["pfptype"] == "number" && req.body["pfptype"] == 0) {
                 if (typeof req.body["pfpid"] == "number") {
                                 var shopitemsobject = JSON.parse(shopitems)
+                                var shopitemsobject2 = JSON.parse(YFshopitems)
                 if (shopitemsobject["fg"][req.body["pfpid"]] != undefined) {
                     if (disableInventoryCheck == false && foregrounds1.includes("," + req.body["pfpid"] + ",") || foregrounds1.startsWith("[" + req.body["pfpid"]) || foregrounds1.endsWith("," + req.body["pfpid"] + "]")) {
                         res.status(400).send("Already Bought")
@@ -369,6 +365,28 @@ app.post("/pfpshop.php", async (req, res) => {
                     else {
                         if (results[0]["branchcoins"] >= shopitemsobject["fg"][req.body["pfpid"]]) {
                 const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, foregroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject["fg"][req.body["pfpid"]]), foregrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])
+                if (results1["affectedRows"] > 0) {
+            res.status(202).send("1234567890")
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (FG).")
+            }
+        }
+        else {
+            res.status(400).end()
+        }
+                }
+                else {
+                    res.status(401).end()
+                }
+                    }
+            }
+            else if (shopitemsobject2["fg"][req.body["pfpid"]] != undefined) {
+                    if (disableInventoryCheck == false && foregrounds1.includes("," + req.body["pfpid"] + ",") || foregrounds1.startsWith("[" + req.body["pfpid"]) || foregrounds1.endsWith("," + req.body["pfpid"] + "]")) {
+                        res.status(400).send("Already Bought")
+                    }
+                    else {
+                        if (results[0]["branchcoins"] >= shopitemsobject2["fg"][req.body["pfpid"]]) {
+                const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, foregroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject2["fg"][req.body["pfpid"]]), foregrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])
                 if (results1["affectedRows"] > 0) {
             res.status(202).send("1234567890")
             if (verbose) {
@@ -395,6 +413,7 @@ app.post("/pfpshop.php", async (req, res) => {
             else if (typeof req.body["pfptype"] == "number" && req.body["pfptype"] == 1) {
                 if (typeof req.body["pfpid"] == "number") {
                                 var shopitemsobject = JSON.parse(shopitems)
+                                var shopitemsobject2 = JSON.parse(YFshopitems)
                 if (shopitemsobject["bg"][req.body["pfpid"]] != undefined) {
                     if (disableInventoryCheck == false && backgrounds1.includes("," + req.body["pfpid"] + ",") || backgrounds1.startsWith("[" + req.body["pfpid"]) || backgrounds1.endsWith("," + req.body["pfpid"] + "]")) {
                         res.status(400).send("Already Bought")
@@ -417,7 +436,31 @@ app.post("/pfpshop.php", async (req, res) => {
             }
                     }
                                 
-        } else {
+        } 
+        else if (shopitemsobject2["bg"][req.body["pfpid"]] != undefined) {
+                    if (disableInventoryCheck == false && backgrounds1.includes("," + req.body["pfpid"] + ",") || backgrounds1.startsWith("[" + req.body["pfpid"]) || backgrounds1.endsWith("," + req.body["pfpid"] + "]")) {
+                        res.status(400).send("Already Bought")
+                    }
+                    else {
+                        if (results[0]["branchcoins"] >= shopitemsobject2["bg"][req.body["pfpid"]]) {
+                const [results1, fields1] = await connection.query('UPDATE bfdibranchesaccount SET branchcoins = ?, backgroundsowned = ? WHERE username = ? AND password = ?',[parseInt(coins) - parseInt(shopitemsobject2["bg"][req.body["pfpid"]]), backgrounds1.replace("]", "") + "," + req.body["pfpid"] + "]",req.body["username"], password])   
+                if (results1["affectedRows"] > 0) {
+            res.status(202).send("1234567890")
+            if (verbose) {
+                console.log("\x1b[34m", "<INFO> " + req.body["username"] + " bought " + req.body["pfpid"] + " (BG).")
+            }
+        }
+        else {
+            res.status(400).end()
+        }
+            }
+            else {
+                res.status(401).end()
+            }
+                    }
+                                
+        }
+        else {
             res.status(200).send("Price not found")
         }
                 }
@@ -1920,7 +1963,7 @@ app.post("/upload.php", async (req, res) => {
         else {
 const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
         if (results2["affectedRows"] > 0) {
-            if (Number.parseFloat(version.slice(2)) > 0.1) {
+            if (Number.parseFloat(version.slice(0,3)) > 0.1) {
                 res.status(200).send("Published new level!")
             }
             else {
@@ -1944,7 +1987,7 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
             var datet = new Date(Date.now())
         const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version])
         if (results1["affectedRows"] > 0) {
-            if (Number.parseFloat(version.slice(2)) > 0.1) {
+            if (Number.parseFloat(version.slice(0,3)) > 0.1) {
                 res.status(200).send("Published new level!")
             }
             else {
@@ -2338,10 +2381,17 @@ app.post("/getprofile.php", async (req, res) => {
     try {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
         {
-              const [results, fields] =  await connection.query(
+            var [results,fields] = []
+            if (parseFloat(version.slice(0,3)) > 0.1) {
+             [results, fields] =  await connection.query(
         'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,points FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
     );
-
+            }
+            else {
+                [results, fields] =  await connection.query(
+        'SELECT id,username,bio,date,branchcoins,moderator,badges,foreground,background,frame,usernameColor,lastonline FROM bfdibranchesaccount WHERE username = ?',[req.body["username"]]
+    );
+            }
    if (results.length == 0) 
     { res.send("{}") } 
    else { 
