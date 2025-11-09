@@ -40,6 +40,11 @@ const connection = await mysql.createConnection({
     database: 'bfdibranches'
 });
 
+function isNumeric(str) {
+  if (typeof str != "string") return false // we only process strings!  
+  return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
 
 //code
 
@@ -1991,7 +1996,8 @@ app.post("/upload.php", async (req, res) => {
         'SELECT id, background, foreground FROM bfdibranchesaccount WHERE username = ? AND password = ?',[req.body["username"], password]
     );
     if (results.length > 0) {
-        if (req.body["replaceid"] != "") {
+        if (isNumeric(req.body["icon"])) {
+            if (req.body["replaceid"] != "") {
             var datet = new Date(Date.now())
         const [results1, fields1] = await connection.query("SELECT username, levelVersion FROM bfdibrancheslevel WHERE id = ?",[req.body["replaceid"]])
             if (results1.length > 0) {
@@ -2038,6 +2044,10 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         else {
             res.status(400).end()
         }
+        }
+        }
+        else {
+            res.status(400).send("Failed: Invalid icon, probably our mistake, sorry!")
         }
     }
     else {
