@@ -41,7 +41,6 @@ const connection = await mysql.createConnection({
 });
 
 function isNumeric(str) {
-  if (typeof str != "string") return false // we only process strings!  
   return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
@@ -1997,7 +1996,7 @@ app.post("/upload.php", async (req, res) => {
     );
     if (results.length > 0) {
         if (isNumeric(req.body["icon"])) {
-            if (req.body["replaceid"] != "") {
+            if (isNumeric(req.body["replaceid"])) {
             var datet = new Date(Date.now())
         const [results1, fields1] = await connection.query("SELECT username, levelVersion FROM bfdibrancheslevel WHERE id = ?",[req.body["replaceid"]])
             if (results1.length > 0) {
