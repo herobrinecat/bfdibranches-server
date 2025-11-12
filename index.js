@@ -21,6 +21,7 @@ var serverSync = {
     "version": false,
     "shopItems": false
 } //Makes the version and shopitems string match the official server by contacting the server
+var disableStaticLevelsLink = true //Disables the static levels url
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
@@ -580,7 +581,8 @@ app.post("/moderation/checkifmoderator.php", async (req, res) => {
     }
 })
 
-app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
+if (disableStaticLevelsLink == false) {
+    app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     try {
         let isnum = /^\d+$/.test(req.params.id)
     if (isnum) {
@@ -606,6 +608,7 @@ app.get("/static/levels/" + ":id" + ".json", async (req, res) => {
     }
 })
 
+}
 app.post("/getlevel.php", async (req, res) => {
     try {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -636,7 +639,8 @@ app.post("/getlevel.php", async (req, res) => {
 
 })
 
-app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
+if (disableStaticLevelsLink == false) {
+    app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
     try {
         let isnum = /^\d+$/.test(req.params.id)
     if (isnum) {
@@ -661,6 +665,7 @@ app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
      res.status(400).end()
     }
 })
+}
 
 app.post("/getlist.php", async (req, res) => {
     try {
