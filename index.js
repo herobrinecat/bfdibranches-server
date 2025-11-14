@@ -8,7 +8,10 @@ import express from 'express'
 import mysql from 'mysql2/promise'
 import jwt from 'jsonwebtoken'
 import http from 'https'
+import fs from 'fs'
+
 //settings
+
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
 var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
@@ -19,12 +22,14 @@ var disableInventoryCheck = false //Disable the inventory check when purchasing 
 var enableResetDailyAward = true //Enables resetting the daily award when a certain day hits every 24 hours
 var serverSync = {
     "version": false,
-    "shopItems": false
+    "shopItems": false,
+    "extraCredits": true //Why would you need this?
 } //Makes the version and shopitems string match the official server by contacting the server
 var disableStaticLevelsLink = true //Disables the static levels url
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
 var shopitems = '{ "fg": { "91": 1000, "98": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
@@ -607,8 +612,54 @@ if (disableStaticLevelsLink == false) {
      res.status(400).end()
     }
 })
-
 }
+
+if (disableStaticLevelsLink == false) {
+    app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
+    try {
+        let isnum = /^\d+$/.test(req.params.id)
+    if (isnum) {
+        const [results, fields] =  await connection.query(
+        'SELECT data,dataLen FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.params.id]
+    );
+    if (results.length > 0) {
+        res.send(results)
+                if (verbose) {
+            console.log("\x1b[34m", "<INFO> " + req.ip + " requested level " + req.params.id + ". (POST)")
+        }
+    }
+    else {
+        res.status(400).end()
+    }
+    }
+    else {
+        res.status(400).end()
+    }
+    } catch (err) {
+    console.log("\x1b[31m", "<ERROR> " + err)
+     res.status(400).end()
+    }
+})
+}
+
+app.get("/static/extraCredits.txt", (req, res) => {
+    if (fs.existsSync("./extraCredits.txt")) {
+        res.status(200).send(fs.readFileSync("./extraCredits.txt"))
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
+app.post("/static/extraCredits.txt", (req, res) => {
+    if (fs.existsSync("./extraCredits.txt")) {
+        res.status(200).send(fs.readFileSync("./extraCredits.txt"))
+    }
+    else {
+        res.status(404).end()
+    }
+})
+
 app.post("/getlevel.php", async (req, res) => {
     try {
         if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -639,33 +690,7 @@ app.post("/getlevel.php", async (req, res) => {
 
 })
 
-if (disableStaticLevelsLink == false) {
-    app.post("/static/levels/" + ":id" + ".json", async (req, res) => {
-    try {
-        let isnum = /^\d+$/.test(req.params.id)
-    if (isnum) {
-        const [results, fields] =  await connection.query(
-        'SELECT data,dataLen FROM bfdibrancheslevel WHERE deleted = 0 AND id = ?',[req.params.id]
-    );
-    if (results.length > 0) {
-        res.send(results)
-                if (verbose) {
-            console.log("\x1b[34m", "<INFO> " + req.ip + " requested level " + req.params.id + ". (POST)")
-        }
-    }
-    else {
-        res.status(400).end()
-    }
-    }
-    else {
-        res.status(400).end()
-    }
-    } catch (err) {
-    console.log("\x1b[31m", "<ERROR> " + err)
-     res.status(400).end()
-    }
-})
-}
+
 
 app.post("/getlist.php", async (req, res) => {
     try {
@@ -751,8 +776,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
                 else if (req.body["order"] == "oldest") {
@@ -813,8 +837,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
             }
@@ -1005,8 +1028,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
                 else if (req.body["order"] == "oldest") {
@@ -1067,8 +1089,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
             }
@@ -1260,8 +1281,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
                 else if (req.body["order"] == "oldest") {
@@ -1322,8 +1342,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                             res.status(400).end()
                     }
                 }
             }
@@ -1516,8 +1535,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
                 else if (req.body["order"] == "oldest") {
@@ -1578,8 +1596,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                             res.status(400).end()
                     }
                 }
             }
@@ -1770,8 +1787,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                        res.status(400).end()
                     }
                 }
                 else if (req.body["order"] == "oldest") {
@@ -1832,8 +1848,7 @@ app.post("/getlist.php", async (req, res) => {
                         res.send(jsonstring)
                     }
                     else {
-                             res.status(400)
-                            res.end()
+                             res.status(400).end()
                     }
                 }
             }
@@ -2969,6 +2984,34 @@ if (disableHashCheck == true) {
                     console.log("\x1b[34m", "<INFO> Shop items synced with official server")
                 })
             })
+                })
+            })
+        }
+        catch (err) {
+            console.log("\x1b[31m", "<ERROR> " + err)
+        }
+    }
+    if (serverSync["extraCredits"] == true) {
+        try {
+            const options = {
+                hostname: "api.bfdibranches.com",
+                path: "/static/extraCredits.txt",
+                headers: {
+                    'User-Agent': 'totallychrome'
+                }
+            }
+
+            http.get(options, (response) => {
+                let data = ''
+
+                response.on('data', (chunk) => {
+                    data += chunk.toString()
+                })
+
+                response.on('end', () => {
+                    if (fs.existsSync("./extraCredits.txt")) fs.unlinkSync("./extraCredits.txt")
+                    fs.writeFileSync("./extraCredits.txt", data)
+                    console.log("\x1b[34m", "<INFO> Extra credits file synced with official server")
                 })
             })
         }
