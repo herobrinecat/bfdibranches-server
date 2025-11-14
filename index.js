@@ -23,9 +23,10 @@ var enableResetDailyAward = true //Enables resetting the daily award when a cert
 var serverSync = {
     "version": false,
     "shopItems": false,
-    "extraCredits": true //Why would you need this?
+    "extraCredits": false //Why would you need this?
 } //Makes the version and shopitems string match the official server by contacting the server
 var disableStaticLevelsLink = true //Disables the static levels url
+var disableLevelCompletion = false //Disables the function that completes level
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
@@ -2270,7 +2271,8 @@ async function parseJwt (token) {
 
 app.post("/completelevel.php", async (req, res) => {
    try {
-    // don't cheat!!! (otherwise you may get banned if you abuse their api, especially clearing D10 and D9 levels, but here, you can't get banned)
+        if (disableLevelCompletion == false) {
+              // don't cheat!!! (otherwise you may get banned if you abuse their api, especially clearing D10 and D9 levels, but here, you can't get banned)
     var password = parseJwt(req.body["password"])
         password.then(async function(passresult) {
             if (blockOtherUserAgent == false || req.headers["user-agent"] != undefined && req.headers["user-agent"].startsWith("GodotEngine")) 
@@ -2414,6 +2416,10 @@ app.post("/completelevel.php", async (req, res) => {
         })
     
      
+        }
+        else {
+            res.status(200).end()
+        }
    } catch (err) {
         console.log("\x1b[31m", "<ERROR> " + err)
         res.status(400).end()
