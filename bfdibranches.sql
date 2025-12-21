@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 9.4.0, for Linux (x86_64)
 --
 -- Host: localhost    Database: bfdibranches
 -- ------------------------------------------------------
--- Server version	8.0.42-0ubuntu0.24.04.1
+-- Server version	9.4.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -62,28 +62,28 @@ DROP TABLE IF EXISTS `bfdibrancheslevel`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bfdibrancheslevel` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb3_bin NOT NULL,
-  `description` varchar(255) COLLATE utf8mb3_bin DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin DEFAULT NULL,
   `difficulty` smallint NOT NULL DEFAULT '1',
   `icon` smallint NOT NULL,
-  `data` mediumtext COLLATE utf8mb3_bin NOT NULL,
+  `data` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `dataLen` bigint NOT NULL,
   `spotlight` tinyint(1) DEFAULT '0',
   `completed` tinyint(1) NOT NULL DEFAULT '0',
-  `completedtime` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT '',
-  `creatortime` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT '',
-  `username` varchar(255) COLLATE utf8mb3_bin NOT NULL,
-  `date` varchar(255) COLLATE utf8mb3_bin NOT NULL,
-  `peoplebeaten` varchar(256) COLLATE utf8mb3_bin NOT NULL DEFAULT '[]',
+  `completedtime` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT '',
+  `creatortime` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT '',
+  `username` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `date` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `peoplebeaten` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT '[]',
   `background` bigint NOT NULL DEFAULT '0',
   `foreground` bigint NOT NULL DEFAULT '0',
-  `version` varchar(255) COLLATE utf8mb3_bin NOT NULL,
+  `version` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `levelVersion` bigint NOT NULL DEFAULT '1',
-  `worldrecordtime` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT '0.00',
+  `worldrecordtime` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT '0.00',
   `characterOnly` tinyint NOT NULL DEFAULT '-1',
-  `worldrecordholder` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT 'Nobody',
-  `firstcompleter` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT 'Nobody',
-  `lastcompleter` varchar(255) COLLATE utf8mb3_bin NOT NULL DEFAULT 'Nobody',
+  `worldrecordholder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT 'Nobody',
+  `firstcompleter` varchar(255) COLLATE utf8mb3_bin DEFAULT NULL,
+  `lastcompleter` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL DEFAULT 'Nobody',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -107,13 +107,13 @@ DROP TABLE IF EXISTS `bfdibranchesreport`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bfdibranchesreport` (
   `reportid` bigint NOT NULL AUTO_INCREMENT,
-  `leveltitle` varchar(200) COLLATE utf8mb3_bin NOT NULL,
-  `levelcreatorname` varchar(200) COLLATE utf8mb3_bin NOT NULL,
+  `leveltitle` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `levelcreatorname` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `levelcreatorid` bigint NOT NULL,
-  `reportername` varchar(200) COLLATE utf8mb3_bin NOT NULL,
-  `date` varchar(200) COLLATE utf8mb3_bin NOT NULL,
+  `reportername` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `date` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `resolved` tinyint(1) NOT NULL DEFAULT '0',
-  `description` text COLLATE utf8mb3_bin NOT NULL,
+  `description` text CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `levelid` bigint NOT NULL,
   PRIMARY KEY (`reportid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
@@ -137,4 +137,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-12 22:50:03
+-- Dump completed on 2025-12-20 22:28:21

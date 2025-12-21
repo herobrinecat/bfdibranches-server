@@ -14,7 +14,7 @@ import fs from 'fs'
 
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
-var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
+var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() exploit on Godot (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
 var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
@@ -22,20 +22,21 @@ var disableInventoryCheck = false //Disable the inventory check when purchasing 
 var enableResetDailyAward = true //Enables resetting the daily award when a certain day hits every 24 hours
 var serverSync = {
     "version": false,
-    "shopItems": false,
+    "shopItems": true,
     "extraCredits": false //Why would you need this?
 } //Makes the version, shopitems, and extracredits string match the official server by contacting the server
 var disableStaticLevelsLink = true //Disables the static levels url
 var disableLevelCompletion = false //Disables the function that completes level
+var ignoreCreatorAsFirstCompleter = true //Ignores the creator when being the first to complete it (Allows other user to complete level first instead of the creator)
 var secret = "bfdibranchessecrettestthatis256b" //A secret when signing/checking the credentials on signup/login
 
 //variables
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const app = express()
-var shopitems = '{ "fg": { "91": 1000, "98": 500, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
-var YFshopitems = '{ "fg": { "58": 500, "92": 500, "93": 500, "94": 500, "95": 500, "97": 500, "106": 500, "107": 500, "108": 500, "109": 500, "110": 500, "99": 500, "100": 500, "48": 1500, "49": 1500, "52": 1500, "54": 1500, "50": 1500, "47": 1500, "56": 1500, "55": 1500, "51": 1500, "53": 1500, "60": 4000, "96": 4000, "101": 7000 }, "bg": { "51": 500, "53": 500, "52": 1000, "59": 1000, "60": 1000, "61": 1000, "62": 1000, "63": 1000, "75": 1000, "77": 1000, "78": 1000, "79": 1000, "80": 1000, "81": 1000, "83": 1000, "84": 1000, "85": 1000, "87": 1000, "90": 1000, "54": 1500, "55": 1500, "56": 1500, "57": 1500, "58": 1500, "82": 1500, "88": 1500, "89": 1500, "76": 1500 } } '
-var version = "0.3.1.1" //A version the server reports using (If the client sees that it doesn't match this version, it will prompt you to update, unless the version check for that version is disabled or patched)
+var shopitems = '{ "fg": { "73": 500, "69": 1000, "24": 500, "25": 500, "34": 500, "30": 500, "43": 500, "31": 500, "41": 500, "57": 500, "32": 500, "42": 500, "33": 500, "36": 500, "72": 500, "78": 500, "84": 500, "45": 500, "7": 1000, "18": 1000, "8": 1000, "16": 1000, "5": 1000, "17": 1000, "15": 1000, "11": 1000, "9": 1000, "14": 1000, "19": 1000, "12": 1000, "20": 1000, "6": 1000, "13": 1000, "10": 1000, "21": 1000, "62": 1000, "65": 1000, "66": 1000, "67": 1000, "68": 1000, "47": 1500, "4": 4000, "40": 4000, "22": 4000, "63": 4000, "37": 7000, "35": 7000, "1010": 7000, "44": 15000, "59": 7000, "61": 7000, "64": 7000, "83": 7000, "90": 7000 }, "bg": { "8": 500, "9": 500, "10": 500, "11": 500, "12": 500, "33": 500, "34": 500, "35": 500, "37": 500, "36": 500, "38": 500, "39": 500, "13": 1000, "14": 1000, "20": 1000, "24": 1000, "21": 1000, "22": 1000, "23": 1000, "42": 1000, "43": 1000, "48": 1000, "49": 1000, "66": 1000, "67": 1000, "68": 1000, "69": 1000, "32": 1500, "15": 1500, "16": 1500, "17": 1500, "64": 1500, "18": 1500, "19": 1500, "25": 1500, "26": 1500, "27": 1500, "28": 1500, "29": 1500, "30": 1500, "31": 1500, "44": 1500, "45": 1500, "46": 1500, "70": 1500, "71": 1500, "65": 1500 } }'
+var YFshopitems = '{ "fg": { "111": 500, "112": 500, "113": 500, "58": 500, "92": 500, "93": 500, "94": 500, "95": 500, "97": 500, "106": 500, "107": 500, "108": 500, "109": 500, "110": 500, "99": 500, "100": 500, "48": 1500, "49": 1500, "52": 1500, "54": 1500, "50": 1500, "56": 1500, "55": 1500, "51": 1500, "53": 1500, "60": 4000, "96": 4000, "101": 7000 }, "bg": { "51": 500, "53": 500, "52": 1000, "59": 1000, "60": 1000, "61": 1000, "62": 1000, "63": 1000, "75": 1000, "77": 1000, "78": 1000, "79": 1000, "80": 1000, "81": 1000, "83": 1000, "84": 1000, "85": 1000, "87": 1000, "90": 1000, "54": 1500, "55": 1500, "56": 1500, "57": 1500, "58": 1500, "82": 1500, "88": 1500, "89": 1500, "76": 1500 } }'
+var version = "0.3.2" //A version the server reports to the client (If the client sees that it doesn't match this version, it will prompt you to update, unless the version check for the client is patched)
 var port = 3000
 
 app.use(express.json({ limit: '8mb' }))
@@ -735,7 +736,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -796,7 +797,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -860,7 +861,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -922,7 +923,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -987,7 +988,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1048,7 +1049,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1112,7 +1113,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1174,7 +1175,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1240,7 +1241,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1301,7 +1302,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1365,7 +1366,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1427,7 +1428,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1494,7 +1495,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1555,7 +1556,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1619,7 +1620,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1681,7 +1682,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1746,7 +1747,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1807,7 +1808,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1871,7 +1872,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -1933,7 +1934,7 @@ app.post("/getlist.php", async (req, res) => {
                             if (peoplebeatenarray[0] == "[]") peoplebeatenarray = ""
 
                             if (peoplebeatenarray.length > 0) {
-                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + results1[i]["firstcompleter"] + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
+                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nWR: " + results1[i]["worldrecordtime"].toString() + " by\n" + results1[i]["worldrecordholder"] + "\n---------------------\nFirst Completer:\n" + ((results1[i]["firstcompleter"] == null) ? "" : results1[i]["firstcompleter"]) + "\n---------------------\nLast Completer:\n" + results1[i]["lastcompleter"] + "\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
                             }
                             else {
                                 results1[i]["date"] =  peoplebeatenarray.length + " Completions\n---------------------\nUpload Date:\n" + results1[i]["date"] + " \n---------------------\n Creator Time:\n" + results1[i]["creatortime"]
@@ -2025,7 +2026,13 @@ app.post("/upload.php", async (req, res) => {
             res.status(403).send("You do not own this level")
         }
         else {
-const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder='Nobody',worldrecordtime='0.00',firstcompleter='Nobody',lastcompleter='Nobody',peoplebeaten='[]', spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["replaceid"]])
+var [results2, fields2] = []
+if (ignoreCreatorAsFirstCompleter == true) {
+    [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder=?,worldrecordtime=?,lastcompleter=?,peoplebeaten=?, spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["username"],req.body["creatortime"],req.body["username"], "[" + results[0]["id"] + "]",req.body["replaceid"]])
+}
+else {
+     [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET title = ?, description = ?, difficulty = 0, icon = ?, data = ?, dataLen = ?,creatortime = ?,username = ?,date = ?,background = ?,foreground = ?,version = ?, levelVersion = ?,worldrecordholder=?,worldrecordtime=?,firstcompleter=?,lastcompleter=?,peoplebeaten=?, spotlight = 0 WHERE id = ? AND deleted = 0",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,results1[0]["levelVersion"] + 1, req.body["username"],req.body["creatortime"],req.body["username"],req.body["username"], "[" + results[0]["id"] + "]",req.body["replaceid"]])
+}
         if (results2["affectedRows"] > 0) {
             if (Number.parseFloat(version.slice(0,3)) > 0.1) {
                 res.status(200).send("Published new level!")
@@ -2049,7 +2056,13 @@ const [results2, fields2] = await connection.query("UPDATE bfdibrancheslevel SET
         }
         else {
             var datet = new Date(Date.now())
-        const [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version])
+        var [results1, fields1] = []
+        if (ignoreCreatorAsFirstCompleter == true) {
+            [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version,worldrecordtime,lastcompleter,worldrecordholder,peoplebeaten) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?,?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,req.body["creatortime"],req.body["username"], req.body["username"],"[" + results[0]["id"] + "]"])
+        }
+        else {
+            [results1, fields1] = await connection.query("INSERT INTO bfdibrancheslevel (title, description, difficulty, icon, data, dataLen,creatortime,username,date,background,foreground,version,worldrecordtime,lastcompleter,worldrecordholder,peoplebeaten,firstcompleter) VALUES (?, ?, 0, ?, ? ,?, ?, ?, ?,?,?,?,?,?,?,?,?)",[req.body["title"],req.body["description"],parseInt(req.body["icon"]),req.body["data"],parseInt(req.body["dataLen"]),req.body["creatortime"],req.body["username"],datet.getFullYear() + "-" + ("0" + (parseInt(datet.getMonth()) + 1).toString()).slice(-2) + "-" + datet.getDate().toString().padStart(2,"0") + " " + datet.getHours().toString().padStart(2,"0") + ":" + datet.getMinutes().toString().padStart(2,"0"),results[0]["background"],results[0]["foreground"],version,req.body["creatortime"],req.body["username"], req.body["username"],"[" + results[0]["id"] + "]",req.body["username"]])
+        }
         if (results1["affectedRows"] > 0) {
             if (Number.parseFloat(version.slice(0,3)) > 0.1) {
                 res.status(200).send("Published new level!")
@@ -2282,7 +2295,7 @@ app.post("/completelevel.php", async (req, res) => {
     password = passresult["password"]
     const [results, fields] = await connection.query("SELECT id, branchcoins, points,backgroundsowned FROM bfdibranchesaccount WHERE username = ? AND password = ?",[req.body["username"],password])
     if (results.length > 0) {
-        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
+        const [results2, fields2] = await connection.query("SELECT peoplebeaten, worldrecordtime, title, spotlight, difficulty,firstcompleter,username FROM bfdibrancheslevel WHERE id = ?",[parseInt(req.body["levelid"])])
         if (results2.length > 0) {
             if (disableInventoryCheck == false && results[0]["backgroundsowned"].includes(",86,") || results[0]["backgroundsowned"].startsWith("[86") || results[0]["backgroundsowned"].endsWith(",86]")) {
                 //do nothing, also branches programmers, if you see this, say hi!
@@ -2301,8 +2314,7 @@ app.post("/completelevel.php", async (req, res) => {
             if (results2[0]["peoplebeaten"].toString().includes("," + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().startsWith("[" + results[0]["id"].toString() + ",") || results2[0]["peoplebeaten"].toString().endsWith("," + results[0]["id"].toString() + "]") || results2[0]["peoplebeaten"] == "[" + results[0]["id"].toString() + "]") {
                 if (parseFloat(req.body["time"]) < parseFloat(results2[0]["worldrecordtime"])) {
                     if (req.body["time"].toString().endsWith(.00)) { req.body["time"] = req.body["time"].slice(0,-3) }
-                    const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
-                    
+                    var [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
                     if (results3["affectedRows"] > 0) {
                         res.status(200).end()
                         if (verbose) {
@@ -2323,7 +2335,13 @@ app.post("/completelevel.php", async (req, res) => {
             else {
                 if (results2[0]["peoplebeaten"] == "[]") {
                     if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
-                    const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ?,worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
+                    var [results3, fields3] = []
+                    if ((results2[0]["username"] != req.body["username"] && ignoreCreatorAsFirstCompleter == true) || ignoreCreatorAsFirstCompleter == false) {
+                        await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ?,worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
+                    }
+                    else {
+                        await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, worldrecordtime = ?, worldrecordholder = ?  WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + results[0]["id"].toString() + "]",req.body["username"], req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
+                    }
                     if (results3["affectedRows"] > 0) {
                         if (results2[0]["spotlight"] > 0) 
                         {
@@ -2348,7 +2366,13 @@ app.post("/completelevel.php", async (req, res) => {
                     )
                 }
                 else {
-                    const [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ? WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + "," + results[0]["id"].toString() + "]",req.body["username"], parseInt(req.body["levelid"])])
+                    var [results3, fields3] = []
+                    if ((results2[0]["username"] != req.body["username"] && ignoreCreatorAsFirstCompleter == true) && (results2[0]["firstcompleter"] == null || results2[0]["firstcompleter"] == undefined) || (ignoreCreatorAsFirstCompleter == false && (results2[0]["firstcompleter"] == null || results2[0]["firstcompleter"] == undefined))) {
+                        [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ?, firstcompleter = ? WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + "," + results[0]["id"].toString() + "]",req.body["username"], req.body["username"], parseInt(req.body["levelid"])])
+                    }
+                    else {
+                        [results3, fields3] = await connection.query("UPDATE bfdibrancheslevel SET peoplebeaten = ?, lastcompleter = ? WHERE id = ?", [results2[0]["peoplebeaten"].toString().slice(0,-1) + "," + results[0]["id"].toString() + "]",req.body["username"], parseInt(req.body["levelid"])])
+                    }
                  if (parseFloat(req.body["time"]) > parseFloat(results2[0]["worldrecordtime"])) {
                     if (!req.body["time"].toString().includes(".")) { req.body["time"] = req.body["time"].slice(0,-2) }
                     const [resultt4, fields4] = await connection.query("UPDATE bfdibrancheslevel SET worldrecordtime = ?, worldrecordholder = ? WHERE id = ?", [req.body["time"], req.body["username"], parseInt(req.body["levelid"])])
