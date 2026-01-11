@@ -14,7 +14,7 @@ import fs from 'fs'
 
 var disableSignatureCheck = false //Disables the signature check when checking if the account info is valid (NOT RECOMMENDED)
 var disableHashCheck = false //Disables the hash check when checking if the account info is valid and uses the legacy method (NOT RECOMMENDED)
-var usernameColorBadgesExploitFix = true //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() exploit on Godot (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
+var usernameColorBadgesExploitFix = false //Fixes the exploit server-side that causes ACE on BFDI: Branches due to str_to_var() exploit on Godot (I'm not responsible if you get your account banned for cheating in Branches if you have this fix off)
 var verbose = false //Logs more info
 var trolladminurl = true //Trolls people by rickrolling when someone tries to go to /admin
 var blockOtherUserAgent = true //Block other user agents except Godot (make it more accurate to the server)
@@ -54,6 +54,17 @@ function isNumeric(str) {
 }
 
 //code
+
+process.argv.forEach((val, index, array) => {
+    if (val == "-port") {
+        if (isNumeric(array[index + 1])) {
+            port = parseInt(array[index + 1])
+        }
+    }
+    else if (val == "-version") {
+        version = array[index + 1]
+    }
+})
 
 app.get('/', (req, res) => {
     //obviously
