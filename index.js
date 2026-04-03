@@ -176,7 +176,7 @@ app.post("/sonicode.php", async (req, res) => {
         var expectedCode = "thisisnotreal"
 
         if (req.body["code"] == expectedCode) {
-            res.status(200).send("correct ")
+            res.status(200).send("correct - you got tricked!")
         }
         else {
             res.status(200).send("incorrect")
