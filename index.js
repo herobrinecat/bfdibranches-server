@@ -3004,15 +3004,15 @@ app.listen(port, () => {
                         }
                     }
 
-                    http.get(options, (response) => {
-                        let data = ''
+                    http.get(options1, (response) => {
+                        let data1 = ''
 
                         response.on('data', (chunk) => {
-                            data += chunk.toString()
+                            data1 += chunk.toString()
                         })
 
                         response.on('end', () => {
-                            YFshopitems = data
+                            YFshopitems = data1
                             console.log("\x1b[34m", "<INFO> Shop items synced with official server")
                         })
                     })
