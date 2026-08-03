@@ -21,7 +21,7 @@ This is what we have implemented so far:
 
 You can set up the project by first, making your MySQL server, you can edit the code to use other databases as well.
 
-Make sure you created the database "bfdibranches", then run the following command to import the sql file
+Make sure you created the database "bfdibranches", then run the following command to import the SQL file
 `mysql -u root -p bfdibranches < bfdibranches.sql`
 or
 `mysql -u root -p bfdibranches < "<some file path to the folder where the sql file is located>\bfdibranches.sql"`
@@ -30,7 +30,7 @@ In index.js, if you're using mysql, then edit the connection variable to your ow
 
 If you are using Visual Studio (Code), then you can start debugging from there. Otherwise, you can start the server with `node index.js` (Make sure the MySQL server is running as well!)
 
-If you want to share your custom server to the public, then port forwarding is required and making the part you're using allowed on your firewall for incoming and outgoing connection.
+If you want to share your custom server to the public, then port forwarding is required and making the port you're using allowed on your firewall for incoming and outgoing connection.
 
 ## Patching the game for custom server
 
