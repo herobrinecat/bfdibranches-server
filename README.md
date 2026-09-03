@@ -1,8 +1,9 @@
-# BFDI: Branches Custom Server
+# BFDI: Branches Custom Server for 0.1-0.3.7
 
 This is a repository where the BFDI: Branches Custom Server is avaliable at and is open-source, letting you know how the server is like, even though it isn't the same.
 
-(I'm aware online levels doesn't work as of 0.3.8.7, this is semi-active, so it would prob take weeks before the fix is released, also due to being busy in my other project)
+This repo is no longer maintained as I wanna focus more on my other project, besides this doesn't get any code changes recently. If you wanna update this to latest version of Branches, you can fork this, but other than that, this is archived for older version of Branches.
+
 ## What's implemented
 
 This is what we have implemented so far:
